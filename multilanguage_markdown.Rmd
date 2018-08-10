@@ -1,0 +1,57 @@
+---
+title: "multilanguage"
+author: "MG"
+date: "30 lipca 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Multi-language Machinations in [R] Markdown 
+
+This document is a small example of how to incorporate a multi-language/engine workflow into a single Rmd document.
+
+```{r}
+library(knitrengines)
+```
+
+## Fetch the data file using bash
+
+```{r "get data file", engine="bash"}
+curl --silent --output goodreads.csv "https://www.gwern.net/docs/personal/goodreads.csv" > goodreads_cleaned.csv
+```
+
+```{bash}
+echo "Hello Bash!"
+cd ../../MagdaG/Anaconda3/
+ls
+swd
+cat flights1.csv flights2.csv flights3.csv > flights.csv
+```
+
+```{r "fix data file", engine="awk", engine.opts="goodreads.csv"}
+{
+  gsub(/<[^>]*>/,"")
+  print >> "goodreads_cleaned.csv"
+}
+```
+
+```{r "process file"}
+goodreads <- read.csv("goodreads_cleaned.csv", stringsAsFactors=FALSE)
+
+ratings_count <- table(goodreads$My.Rating)
+
+write.table(as.data.frame(ratings_count), "goodreads_ratings.dat", col.names=FALSE, sep=" ", quote=FALSE)
+```
+
+```{r "plot me", engine="gnuplot"}
+set terminal png 
+set output "goodreads.png"
+set style fill solid
+set boxwidth 0.5
+plot "goodreads_ratings.dat" using 1:3:xtic(2) with boxe
+```
+
+![](goodreads.png)

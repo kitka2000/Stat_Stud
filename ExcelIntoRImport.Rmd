@@ -1,0 +1,44 @@
+---
+title: "Importing Excel files"
+author: "MG"
+date: "20 lipca 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Installing flipAPI
+
+installation is very straightforward. Simply open R and type the following into the console:
+
+```{r}
+#if necessary install.packages(devtools)
+#if needed devtools::install_github("Displayr/flipAPI")
+```
+
+## Using flipAPI
+
+It can be used stright forward (file name or the whole path needs to be placed in parenthes:
+
+```{r}
+library(flipAPI)
+# DownloadXLSX(filename)
+# DownloadXLSX("")
+```
+
+## Data output format
+
+In many cases, the Excel format contains multiple tables with comments and other text. It is not necessary to reformat the file before importing. We can specify particular sheets or ranges to import.
+
+```{r}
+cola1 = DownloadXLSX("https://wiki.q-researchsoftware.com/images/b/b9/Cola_Discriminant_Functions.xlsx", want.col.names = TRUE, range = "A2:G9")
+cola2 = DownloadXLSX("https://wiki.q-researchsoftware.com/images/b/b9/Cola_Discriminant_Functions.xlsx", want.col.names = TRUE, want.row.names = FALSE, sheet = 2, range = "AB2:AC330")
+```
+```{r}
+str(cola1)
+```
+```{r}
+str(cola2)
+```

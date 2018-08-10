@@ -1,0 +1,108 @@
+---
+title: "dataAggregate"
+author: "MG"
+date: "24 lipca 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Any function that can be applied to a numeric variable can be used within aggregate. Mean, maximum, minimum, count, standard deviation and sum are all popular.
+
+## Loading data and agregate
+
+```{r}
+library(flipAPI)
+data = DownloadXLSX("https://wiki.q-researchsoftware.com/images/1/1b/Aggregation_data.xlsx", want.row.names = FALSE, want.data.frame = TRUE)
+
+agg = aggregate(data,
+                by = list(data$Role),
+                FUN = mean)
+
+# It cannot aggregate non numeric data. Next functon manually remove empty columns. There are several ways of removing empty (NA filled) columns:
+
+agg[colSums(!is.na(agg)) > 0]
+
+agg[, colSums(is.na(agg)) != nrow(agg)]
+
+library(dplyr)
+agg %>% select_if(~sum(!is.na(.)) > 0)
+
+Filter(function(x) !all(is.na(x)), agg)
+
+```
+
+For more specific purposes, it is also possible to write your own function in R and refer to that within aggregate. The second largest value of each group is returned, or the largest if the group has only one case. The groups are formed by Role and by Shift together.
+
+```{r}
+second = function(x) {
+            if (length(x) == 1)
+                return(x)
+            return(sort(x, decreasing = TRUE)[2])}
+ 
+agg2 <- aggregate(data,
+                by = list(data$Role, data$Shift),
+                FUN = second)
+# Grouping columns with duplicated data are ommited
+agg2[3:7]
+```
+
+The aggregate function has a few more features to be aware of:
+
+  * Grouping variable(s) and variables to be aggregated can be specified with R’s formula notation - such as y ~ x or cbind(y1, y2) ~ x1 + x2, where the y variables are numeric data to be split into groups according to the grouping x variables (usually factors).
+  * Setting drop = TRUE means that any groups with zero count are removed.
+  * na.action controls the treatment of missing values within the data.
+  
+  
+  ### Examples
+  
+```{r}
+# Compute the averages for the variables in 'state.x77', grouped according to the region (Northeast, South, North Central, West) that each state belongs to.
+
+aggregate(state.x77, list(Region = state.region), mean)
+
+# Compute the averages according to region and the occurrence of more than 130 days of frost.
+aggregate(state.x77,
+          list(Region = state.region,
+               Cold = state.x77[,"Frost"] > 130),
+          mean)
+# (Note that no state in 'South' is THAT cold.)
+
+
+# example with character variables and NAs
+testDF <- data.frame(v1 = c(1,3,5,7,8,3,5,NA,4,5,7,9),
+                     v2 = c(11,33,55,77,88,33,55,NA,44,55,77,99) )
+by1 <- c("red", "blue", 1, 2, NA, "big", 1, 2, "red", 1, NA, 12)
+by2 <- c("wet", "dry", 99, 95, NA, "damp", 95, 99, "red", 99, NA, NA)
+aggregate(x = testDF, by = list(by1, by2), FUN = "mean")
+
+# and if you want to treat NAs as a group
+fby1 <- factor(by1, exclude = "")
+fby2 <- factor(by2, exclude = "")
+aggregate(x = testDF, by = list(fby1, fby2), FUN = "mean")
+
+
+# Formulas, one ~ one, one ~ many, many ~ one, and many ~ many:
+aggregate(weight ~ feed, data = chickwts, mean)
+aggregate(breaks ~ wool + tension, data = warpbreaks, mean)
+aggregate(cbind(Ozone, Temp) ~ Month, data = airquality, mean)
+aggregate(cbind(ncases, ncontrols) ~ alcgp + tobgp, data = esoph, sum)
+
+# Dot notation:
+aggregate(. ~ Species, data = iris, mean)
+aggregate(len ~ ., data = ToothGrowth, mean)
+
+##Often followed by xtabs():
+ag <- aggregate(len ~ ., data = ToothGrowth, mean)
+xtabs(len ~ ., data = ag)
+
+
+# Compute the average annual approval ratings for American presidents.
+aggregate(presidents, nfrequency = 1, FUN = mean)
+# Give the summer less weight.
+aggregate(presidents, nfrequency = 1,
+          FUN = weighted.mean, w = c(1, 1, 0.5, 1))
+          
+```

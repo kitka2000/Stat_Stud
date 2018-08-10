@@ -1,0 +1,40 @@
+---
+title: "Base R"
+author: "MG"
+date: "11 czerwca 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Converting data.frame
+
+Basic wide to long reshape
+
+```{r cars}
+gdi <- read.csv(stringsAsFactors = FALSE, url("https://jozefhajnala.gitlab.io/r/post/data/ESA2010_GDI.csv"))
+head(gdi[, 1:7])
+
+gdi_long <- reshape(data = gdi,
+                    direction = "long",
+                    varying = 2:23)
+head(gdi_long)
+```
+
+**data** - almost obviously, this is the data.frame we want to reshape
+
+**varying** - names or indices of columns which we want to stack on each other into a single column
+
+*R automatically recognizes the Y and the years that get translated into the time column. This is because the column names are in a format that reshape can guess automatically: [string].[integer], in our case "Y.1996", "Y.1997", etc. It has a lot of benefits to keep this naming convention for column names before reshaping. If the names have a different character between the [string] and the [integer] (for example "something_1996", "something_1997"), one can specify this character with the sep argument (e.g. sep = "_")
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

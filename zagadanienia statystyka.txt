@@ -1,0 +1,10 @@
+Zagadnienia Satystyka studenci
+
+1. Dobór próby – oszacowanie odpowiedniej liczebnoœci próby
+2. Normalizacja danych, usuwanie danych odstaj¹cych od wiêkszoœci
+3. Dobór w³aœciwych testów – omówienie rodzajów dostêpnych testów dla prób zale¿nych i niezale¿nych, kiedy nale¿y z nich skorzystaæ
+4. Prezentacja graficzna wyników (wykresy, histogramy itp.)
+5. ANOVA – rodzaje analiz wariancji i ich zastosowanie
+6. Badanie zale¿noœci miêdzy zmiennymi, wspó³czynnik korelacji, badanie zmiennoœci w jednej grupie 
+7. Podstawowe umiejêtnoœci pracy w programie statystycznym np. „R”, "Statistica"
+

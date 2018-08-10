@@ -1,0 +1,129 @@
+---
+title: "ggplot2"
+author: "MG"
+date: "24 lipca 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ggplot2 basics
+
+Loading libraries
+
+```{r}
+library("viridisLite")
+library("ggplot2")
+```
+
+## ggplot2 colors
+
+### viridis
+
+The viridis scales provide color maps that are perceptually uniform in both color and black-and-white. They are also designed to be perceived by viewers with common forms of color blindness.
+
+*scale_colour_viridis_d(..., alpha = 1, begin = 0, end = 1, direction = 1, option = "D", aesthetics = "colour")*
+  
+*scale_fill_viridis_d(..., alpha = 1, begin = 0, end = 1, direction = 1, option = "D", aesthetics = "fill")*
+  
+*scale_colour_viridis_c(..., alpha = 1, begin = 0, end = 1, direction = 1, option = "D", values = NULL, space = "Lab", na.value = "grey50", guide = "colourbar", aesthetics = "colour")*
+  
+*scale_fill_viridis_c(..., alpha = 1, begin = 0, end = 1, direction = 1, option = "D", values = NULL, space = "Lab", na.value = "grey50", guide = "colourbar", aesthetics = "fill")*
+
+#### Arguments
+**alpha**	The alpha transparency, a number in [0,1], see argument alpha in hsv.
+
+**begin** The (corrected) hue in [0,1] at which the viridis colormap begins.
+
+**end** The (corrected) hue in [0,1] at which the viridis colormap ends.
+
+**direction** Sets the order of colors in the scale. If 1, the default, colors are ordered from darkest to lightest. If -1, the order of colors is reversed.
+
+**option** A character string indicating the colormap option to use. Four options are available: "magma" (or "A"), "inferno" (or "B"), "plasma" (or "C"), "viridis" (or "D", the default option) and "cividis" (or "E").
+
+**aesthetics** Character string or vector of character strings listing the name(s) of the aesthetic(s) that this scale works with. This can be useful, for example, to apply colour settings to the colour and fill aesthetics at the same time, via aesthetics = c("colour", "fill").
+
+**values** if colours should not be evenly positioned along the gradient this vector gives the position (between 0 and 1) for each colour in the colours vector. See rescale() for a convience function to map an arbitrary range to between 0 and 1.
+
+**space** colour space in which to calculate gradient. Must be "Lab" - other values are deprecated.
+
+**na.value** Missing values will be replaced with this value.
+
+**guide** A function used to create a guide or its name. See guides() for more info.
+
+## ##
+
+*viridis_pal(alpha = 1, begin = 0, end = 1, direction = 1, option = "D")*
+
+The same arguments as above 
+
+## ##
+
+#### Other colour scales
+
+Other colour scales: scale_alpha, scale_colour_brewer, scale_colour_gradient, scale_colour_grey, scale_colour_hue
+
+```{r}
+
+# viridis is the default colour/fill scale for ordered factors
+dsamp <- diamonds[sample(nrow(diamonds), 1000), ]
+ggplot(dsamp, aes(carat, price)) +
+  geom_point(aes(colour = clarity))
+
+```
+```{r}
+# Use viridis_d with discrete data
+txsamp <- subset(txhousing, city %in%
+  c("Houston", "Fort Worth", "San Antonio", "Dallas", "Austin"))
+(d <- ggplot(data = txsamp, aes(x = sales, y = median)) +
+   geom_point(aes(colour = city)))
+```
+```{r}
+# Select palette to use
+d + scale_colour_viridis_d(option = "plasma")
+```
+
+```{r}
+# Use viridis_c with continous data
+(v <- ggplot(faithfuld) +
+  geom_tile(aes(waiting, eruptions, fill = density)))
+
+v + scale_fill_viridis_c()
+
+v + scale_fill_viridis_c(option = "plasma")
+```
+
+### Library ***colorspace*** 
+
+```{r}
+library("colorspace")
+#pal <- choose_palette()#
+```
+
+## Scaterplot in ggplot2
+```{r}
+library(googlesheets)
+library(tidyverse)
+ 
+city_commutes <- read.csv("~/Rdata/city_commutes.csv - city_commutes.csv.csv")
+ 
+city_commutes %>% 
+  ggplot(aes(smh_density, smh_commute)) + 
+  geom_point(aes(size = smh_commute, color = smh_density)) + 
+  guides(size = FALSE, color = FALSE) + 
+  geom_text(aes(label = city), vjust = -0.9, hjust = 0.74) + 
+  labs(x = "Density (people per sq. km)", 
+       y = "Average commute time (min)", 
+       title = "Average one-way commute time versus population density", 
+       subtitle = "Dashed lines indicate median values for the dataset") + 
+  geom_hline(aes(yintercept = median(smh_commute)), 
+             linetype = "dashed", 
+             color = "darkred") + 
+  geom_vline(aes(xintercept = median(smh_density)), 
+             linetype = "dashed", 
+             color = "darkred") +
+  theme_bw() + 
+  scale_color_viridis_c()
+```

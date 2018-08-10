@@ -1,0 +1,47 @@
+---
+title: "Stata data"
+author: "MG"
+date: "30 lipca 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Outliers
+
+The most common definition is that it is a value that lies far away from the main body of observations for a variable and could distort summaries of the distribution of values. In practice this translates to a value that is 1.5 times the IQR (interquartile range) more extreme than the quartiles of the distribution.
+The most effective way to see an outlier is to use a boxplot.
+
+![outlier visualisation](C:/Users/MagdaG/Desktop/boxplot.png)
+
+```{r}
+library(tidyverse)
+library(DescTools)
+library(ggpubr)
+tnf <- read.csv2("C:/Users/MagdaG/Desktop/talid.csv")
+tnf_long <- tnf %>% 
+ gather(vis0:vis4, key = "visit", value = "value") %>% 
+ group_by(visit)
+
+gr_tnf_vis2 <- tnf_long %>% 
+ filter(!is.na(visit) & !is.na(value)) %>% 
+ ggboxplot(x = "visit", y = "value",
+ palette = "aaas", 
+ title = "TNF Levels by Visit - Thalidomide Group",
+ xlab = "Visit",
+ ylab = "TNF level",
+ ggtheme = theme_gray())
+suppressMessages(gr_tnf_vis2)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
