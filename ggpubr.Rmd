@@ -1,0 +1,347 @@
+---
+title: "ggpubr"
+author: "MG"
+date: "10 sierpnia 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Pakiet ggpubr()
+
+Wykresy gotowe do publikacji, wykorzystujące możliwości *ggplot2*, jednocześnie ułatwiając ich stosowanie dzięki zastosowaniu funkcji *ggpar()*. Parametry graficzne, które można zmienić z wykorzystaniem funkcji *ggpar()* to:
+
+* tytuł wykresu, oznaczenia osi, opisy legendy
+* umiejscowienie legendy i jej wygląd
+* kolory
+* wartości maksymalne i minimalne osi
+* rodzaj transformacji warości osi (np. oś logarytmiczna)
+* znaczniki osi
+* estetykę/ wygląd wykresu z wykorzystaniem tematów (Themes)
+* rotowanie wykresu
+
+### Podstawowy wykres pudełkowy (ang: boxplot)
+
+```{r, message=F, warning=F}
+# if(!require(devtools)) install.packages("ggpubr")
+# if(!require(devtools)) install.packages("devtools")
+# devtools::install_github("kassambara/ggpubr")
+
+library(ggpubr)
+
+# Podstawowy wykres, wykorzystujacy zaimplementowane w R dane 'ToothGrowth'
+
+data <- ToothGrowth
+head(data)
+
+p <- ggboxplot(ToothGrowth, x = "dose", y = "len",
+               color = "dose") # wygwnwerowany wykres zapisywany jest jako lista o nazwie p, do której możemy odwoływać się wprowadzając kolejne zmiany w wyglądzie wykresu
+p
+# Add grids
+p + grids(linetype = "dashed")
+
+```
+
+```{r}
+# Add panel border line
+p + border("black")
+  
+# Change background color
+p + bgcolor("#BFD5E3") +
+  border("#BFD5E3") 
+```
+
+### Change titles and axis labels
+
+```{r}
+p2 <- ggpar(p, 
+            title = "Box Plot created with ggpubr",
+            subtitle = "Length by dose",
+            caption = "Source: ggpubr",
+            xlab ="Dose (mg)", 
+            ylab = "Teeth length",
+            legend.title = "Dose (mg)") # Tworzymy 2 listę z parametrami wykresu, aby nie nadpisać pierwszej (p). Teraz możemy odwoływać się również do niej, jako do podstawowego wykresu, który będziemy modyfikować
+p2
+```
+
+#### zmiana parametrów czcionki
+
+```{r}
+ggpar(p2, 
+      font.title = c(14, "bold.italic", "red"),
+      font.subtitle = c(10,  "orange"),
+      font.caption = c(10,  "orange"),
+      font.x = c(14,  "blue"),
+      font.y = c(14,  "#993333")
+      )
+```
+
+Alternatywnie z użyciem funkcji *ggplot2* **_font()_**
+
+```{r}
+# p2 +
+# font("title", size = 14, color = "red", face = "bold.italic")+
+# font("subtitle", size = 10, color = "orange")+
+# font("caption", size = 10, color = "orange")+
+# font("xlab", size = 12, color = "blue")+
+# font("ylab", size = 12, color = "#993333")
+
+```
+
+```{r}
+# Change title texts and fonts
+# line break: \n
+ggpar(p, title = "Plot of length \n by dose",
+      xlab ="Dose (mg)", ylab = "Teeth length",
+      legend.title = "Dose (mg)",
+      font.title = c(14,"bold.italic", "red"),
+      font.x = c(14, "bold", "#2E9FDF"),
+      font.y = c(14, "bold", "#E7B800"))
+```
+
+> 
+* font.title, font.subtitle, font.caption, font.x, font.y are vectors of length 3 indicating respectively the size (e.g.: 14), the style (e.g.: “plain”, “bold”, “italic”, “bold.italic”) and the color (e.g.: “red”) of main title, subtitle, caption, xlab and ylab, respectively. For example font.x = c(14, “bold”, “red”). Use font.x = 14, to change only font size; or use font.x = “bold”, to change only font face.
+* you can use line breaks, to split long title into multiple lines.
+
+
+### Umiejscowienie i wygląd legendy
+
+```{r}
+ggpar(p,
+      legend = "right", legend.title = "Dose (mg)") + 
+  font("legend.title", color = "blue", face = "bold")+ 
+  font("legend.text", color = "red")
+```
+
+> Note that, the legend argument is a character vector specifying legend position. Allowed values are one of c(“top”, “bottom”, “left”, “right”, “none”). To remove the legend use legend = “none”. Legend position can be also specified using a numeric vector c(x, y). Their values should be between 0 and 1. c(0,0) corresponds to the “bottom left” and c(1,1) corresponds to the “top right” position. 
+
+### Zmiana palety kolorów
+
+Argument **palette** funkcji *ggpar()* służy do zmiany palety kolorów stosowanych w wykresach. Dozwolone jest korzystanie z:
+
+* samodzielnie dobranych zestawów kolorów np.: c(“blue”, “red”) lub c(“#00AFBB”, “#E7B800”);
+* plaety szarości z użyciem “grey”;
+* palet pakietu **_brewer_** np.: “RdBu”, “Blues”, …; Aby wyświetlic wszystkie możliwości można wpisać w *R: RColorBrewer::display.brewer.all()*.
+* oraz palety przygotowane do zastosowań naukowych (ang: scientific journal palettes) z pakietu **_ggsci_** np.: “npg”, “aaas”, “lancet”, “jco”, “ucscgb”, “uchicago”, “simpsons” i “rickandmorty”.
+
+```{r}
+# Use custom color palette
+ggpar(p, palette = c("#00AFBB", "#E7B800", "#FC4E07"))
+# Use brewer palette. 
+# Type RColorBrewer::display.brewer.all(), to see possible palettes
+ggpar(p, palette = "Dark2" )
+# Use grey palette
+ggpar(p, palette = "grey")
+   
+# Use scientific journal palette from ggsci package
+# Allowed values: "npg", "aaas", "lancet", "jco", 
+#   "ucscgb", "uchicago", "simpsons" and "rickandmorty".
+ggpar(p, palette = "npg") # nature
+
+# Alternatywnie można użyć funkcji ggplot2 color_palette() i fill_palette()
+
+# jco color palette
+p + color_palette("jco")
+# Custom color
+p + color_palette(c("#00AFCB", "#E7B700", "#FC4E08"))
+```
+
+### Gradienty kolorów
+
+Do zmiany wypelnień na gradientowe, pakiet **_ggpubr_** posiada 2 funkcje - *gradient_color()* i *gradient_fill()*. Na przykładzie wykresu punktowego przedsawione zostaną ich możliwości
+
+```{r}
+df <- mtcars
+head(df)
+
+p3 <- ggscatter(mtcars, x = "wt", y = "mpg", color = "mpg",
+                size = 2)
+
+p3
+
+# Use one custom color
+p3 + gradient_color("red")
+# Two colors
+p3 + gradient_color(c("blue",  "red"))
+# Three colors
+p3 + gradient_color(c("blue", "white", "red"))
+# Use RColorBrewer palette
+p3 + gradient_color("RdYlBu")
+
+
+p4 <- ggscatter(mtcars, x = "wt", y = "mpg", fill = "mpg",
+                size = 4, shape = 21) # utworzenie wykresu wypełnionego jednolitym kolorem
+p4 + gradient_fill(c("blue", "white", "red")) # zmiana koloru na gradient
+
+```
+
+### Zmiana wartości osi i skali
+
+Możliwe jest wykorzystanie następujących argumentów:
+
+* **xlim**, **ylim**: wektor liczbowy o długości 2, określający wartości graniczne osi x i y (odpowiednio, wartość minimum i maksimum) np.: **ylim = c(0, 50)**.
+* **xscale**, **yscale**: odpowiednio skala osi x i y. Dozwolona wartość, to jedna z c(“none”, “log2”, “log10”, “sqrt”); np.: **yscale=“log2”**.
+* **format.scale**: wartość logiczna. Jeśli **TRUE**, znaczniki osi zostaną przedstawione w postaci potęg, gdy wartości xscale lub yscale = “log2” lub “log10”.
+
+```{r}
+
+# Change y axis limits
+ggpar(p, ylim = c(0, 50))
+# Change y axis scale to log2
+ggpar(p, yscale = "log2")
+# Format axis scale
+ggpar(p, yscale = "log2", format.scale = TRUE)
+
+#zapis alternatywny: p + yscale("log2", .format = TRUE)
+```
+
+### Dostosowanie opisów osi i znaczników
+
+```{r}
+# Change the font of x and y axis texts.
+# Rotate x and y texts, angle = 45
+p + 
+  font("xy.text", size = 12, color = "blue", face = "bold") +
+  rotate_x_text(45)+       
+  rotate_y_text(45)
+
+# remove ticks and axis texts
+p + rremove("ticks")+
+  rremove("axis.text")
+```
+
+### Obracanie wykresu
+
+```{r}
+
+# Horizontal box plot
+p + rotate()
+
+```
+
+### Zmiana szablonu wykresu
+
+Z zalożenia wykresy w tym pakiecie tworzone są na podstawie szablonu **theme_pubr()**. Do zmiany szablonu wykorzystywany jest argument **ggtheme**. Dozwolone są oficjalne szablony ggplot2: theme_gray(), theme_bw(), theme_minimal(), theme_classic(), theme_void(), etc. Możliwe jest również wykorzystanie funkcji **“+”** do dodawania stylów.
+
+```{r}
+
+# Gray theme
+p + theme_gray()
+# Black and white theme
+p + theme_bw()
+# Theme light
+p + theme_light()
+# Minimal theme
+p + theme_minimal()
+# Empty theme
+p + theme_void()
+
+```
+
+### Usuwanie komponentóW wykresu - funkcja **rremove()**
+
+Użycie: rremove(object)
+
+Dozwolone obiekty (objects)
+
+* **“grid”** siatka x i y
+* **“x.grid”** siatka po x-ach
+* **“y.grid”** siatki po y-ach
+* **“axis”** obie osie x i y
+* **“x.axis”** oś x
+* **“y.axis”** oś y
+* **“xlab”**, lub **“x.title”** tytuł osi x
+* **“ylab”**, lub **“y.title”** tytuł osi y
+* **“xylab”**, **“xy.title”** lub **“axis.title”** tytuły obu osi
+* **“x.text”** tekst na osi x (etykiety)
+* **“y.text”** tekst na osi y (etykiety)
+* **“xy.text”** lub **“axis.text”** tekst na obu osiach
+* **“ticks”** znaczniki obu osi
+* **“x.ticks”** znaczniki osi x
+* **“y.ticks”** znaczniki osi y
+* **“legend.title”** tytuł legendy
+* **“legend”** całość legendy
+
+```{r}
+# Basic plot
+p <- ggboxplot(ToothGrowth, x = "dose", y = "len",
+  ggtheme = theme_gray())
+p
+# Remove all grids
+p + rremove("grid")
+# Remove only x grids
+p + rremove("x.grid")
+
+```
+
+## Rozdzielanie wykresów i tworzenie paneli
+
+Wykorzystamy dane *"ToothGrowth"*
+
+```{r}
+data <- ToothGrowth
+data$dose <- as.factor(data$dose) # Zmieniamy typ danych w kolumnie dose na czynniki (FACTOR)
+head(data)
+
+p <- ggdensity(data, x = "len", fill = "dose", 
+               palette = "jco", 
+               ggtheme = theme_light(), legend = "top")
+p
+```
+
+### Przedstawienie danych na niezależnych wykresach po podziale na podstawie jednej z wartości grupujących
+
+```{r}
+
+facet(p, facet.by = "supp") # podział na 2 niezależne wykresy na podstawie zmiennej supp
+
+facet(p, facet.by = "supp", ncol = 1) # rozmieszcenie w 1 kolumnie
+
+```
+
+### Przedstawienie danych na niezależnych wykresach po podziale na podstawie dwóch wartości grupujących
+
+The data can be split up by one or two variables that vary on the horizontal and/or vertical direction.
+
+For example in facet.by = c(“supp”, “dose”):
+
+    “supp”, the first variable, will be displayed in vertical direction
+    “dose”, the second variable, will be displayed in horizontal direction.
+
+```{r}
+
+# Divide with "supp" vertical, "dose" horizontal
+facet(p, facet.by = c("supp", "dose"),
+      short.panel.labs = FALSE)
+
+```
+
+#### Modyfikowanie wygladu paneli
+
+Dodatkowe argumenty służące do modyfikacji paneli można znaleźć po wpisaniu *?facet* a obejmują m.in.:
+
+* **short.panel.labs**: logical value. If TRUE, create short labels for panels by omitting variable names; in other words panels will be labelled only by variable grouping levels.
+* **panel.labs**: a list of one or two character vectors to modify facet label text. For example, panel.labs = list(sex = c(“Male”, “Female”)) specifies the labels for the “sex” variable. For two grouping variables, you can use for example panel.labs = list(sex = c(“Male”, “Female”), rx = c(“Obs”, “Lev”, “Lev2”) ).
+* **panel.labs.background**: a list of aesthetics to customize the background of panel labels. Should contain the combination of the following elements:
+        color, linetype, size: background line color, type and size
+        fill: background fill color. For example, panel.labs.background = list(color = “blue”, fill = “pink”).
+* **panel.labs.font**: a list of aesthetics indicating the size (e.g.: 14), the face/style (e.g.: “plain”, “bold”, “italic”, “bold.italic”) and the color (e.g.: “red”) and the orientation angle (e.g.: 45) of panel labels. Use panel.labs.font.x and panel.labs.font.y to customize only labels in x direction and y direction, respectively.
+
+
+
+```{r}
+
+# Podział na "supp" w pionie, "dose" horyzontalnie
+facet(p, facet.by = c("supp", "dose"),
+       panel.labs = list(
+         supp = c("Orange Juice", "Vitamin C"),
+         dose = c("D0.5", "D1", "D2") # etykiety paneli po y i x zależne od danych grupujacych "dose" i "supp"
+         ),
+       panel.labs.background = list(color = "steelblue", fill = "steelblue", size = 0.5), # kolor paneli (obwódka i wypełnienie) oraz ich rozmiar
+       panel.labs.font = list(color = "white"), # kolor czcionki paneli
+       panel.labs.font.x = list(angle = 45, color = "white") # parametry czcionek paneli osi x
+      )
+```
+
