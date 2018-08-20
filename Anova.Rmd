@@ -1,0 +1,172 @@
+---
+title: "ANOVA_studenci"
+author: "Magda G."
+date: "9 sierpnia 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ANOVA
+
+Niedokładność jako procedury statystycznej, kierowanie sie w stronę mix-modelling.
+
+ANOVA to tosunkowo prosta metoda, ale często wyniki są źle przedstawione i/lub źle zinterpretowane. Czzęsto jest to spowodowane koniecznościa przekopiowywania danych z programów statystycznych. Pakiet 'psycho' automatyzuje część czynności i przedstawia wyniki w formie łatwego do przeklejenia tekstu. Pakiet R 'psycho'
+
+Sprawdzanie jakości danych statystycznych w artykułach 
+http://statcheck.io/. Wymaga podania danych w formacie APA.
+
+```{r, out.width = "600px", fig.align="center", echo=FALSE}
+knitr::include_graphics("C:/Users/Magda/Documents/StatystykaStudenci/statcheck.jpg")
+```
+
+format APA dla artykułów naukowych
+Microsoft office umożliwia pobranie template makiety stylu?? "APA style report (6th edition)"  
+
+Let’s start by doing a traditional ANOVA with adjusting (the ability to flexibly regulate one’s emotions) as dependent variable, and sex and salary as categorical predictors.
+
+```{r}
+
+# if needed instal 'psycho'
+# install.packages('psycho')
+library(psycho)
+# if instalation does not work try:
+# install.packages('devtools')
+# Install the latest psycho version
+# devtools::install_github("neuropsychology/psycho.R")  
+
+data <- psycho::affective  # load a dataset available in the psycho package
+aov_results <- aov(Adjusting ~ Sex * Salary, data=data) # Fit the ANOVA
+summary(aov_results)  # Inspect the results
+
+```
+
+The psycho package include a simple function, analyze() that can be applied to an ANOVA object to format its content.
+
+```{r}
+analyze(aov_results)
+```
+
+It formats the results, computes the partial omega-squared as an index of effect size as well as its interpretation and presents the results in a APA-compatible way. 
+
+![](C:/Users/Magda/Documents/StatystykaStudenci/partial-omega-squared.png)
+
+Omega squared (ω2) is a measure of effect size, or the degree of association for a population. It is an estimate of how much variance in the response variables are accounted for by the explanatory variables. Omega squared is widely viewed as a lesser biased alternative to eta-squared, especially when sample sizes are small. ω2 can have values between ± 1; Zero indicates no effect; If the observed F is less than one, ω2 will be negative.
+
+
+```{r}
+
+library(tidyverse)
+df <- psycho::emotion %>% 
+  select(Participant_ID, 
+         Participant_Sex, 
+         Emotion_Condition, 
+         Subjective_Valence,
+         Recall)
+
+summary(df)
+
+```
+Ramka z danymi *Dataframe* (o nzwie df) zawiera dane zebrane od kilkuset uczestników, którym przedstawiono neutralne i nieprzyjemne obrazy (kolumna Emotion_Condition). Każdy rząd to jeden eksperyment - po 48 powtórzeń na każdego uczestnika (48 rzędów dotyczy jenego uczestnika). Podczas każdego powtórzenia uczestnik musiał określić swoje emocje (ocena subiektywna: pozytywna lub negatywna), w odniesieniu do przedsatwionego obrazu. Po 20min po ocenie odczuć uczestnik miał przypomnieć sobie wszystkie obrazy, które zapamiętał. 
+
+Df zawiera dla każdego powtórzenia 5 zmiennych: imię uczestnika (Participant_ID), płeć (Participant_Sex), emocje (Emotion_Condition), ocenę subiektywną (Subjective_Valence) i czy obraz został zapamiętany (Recall).
+
+
+### Czy emocje wpływają na ocene subiektywną? 
+
+#### Zastosowanie ANOVA
+
+```{r}
+summary(aov(Subjective_Valence ~ Emotion_Condition + Error(Participant_ID/Emotion_Condition), data=df))
+```
+
+Wow, we found that there is a significant effect of the emotional condition on valence ratings. We might have Science material here.
+
+As you know, an ANOVA is pretty much a condensed linear model where the predictors are factors. Therefore, we can run an ANOVA on a linear mixed model (which includes the “error” term, or random effect).
+
+#### Zastosowanie modeli liniowych
+
+```{r}
+library(lmerTest)
+fit <- lmer(Subjective_Valence ~ Emotion_Condition + (1|Participant_ID), data=df)
+anova(fit)
+```
+
+As you can see, the results are, for the important bits (the sum of squares, mean square and p value), very close to those of the traditional approach.
+
+This function overloads lmer from the lme4-package (lme4::lmer) and adds a couple of slots needed for the computation of Satterthwaite denominator degrees of freedom. All arguments are the same as for lme4::lmer and all the usual lmer-methods work.
+
+a two-sided linear formula object describing both the fixed-effects and random-effects part of the model, with the response on the left of a ~ operator and the terms, separated by + operators, on the right.
+Random-effects terms are distinguished by vertical bars (|) separating expressions for design matrices from grouping factors. Two vertical bars (||) can be used to specify multiple uncorrelated random effects for the same grouping variable.
+
+```{r}
+results <- analyze(fit)
+print(results)
+```
+
+## Post-hoc / Contrast Analysis
+
+Then, we wou’d like to see how the levels are different. To do this, we have to run a “contrast” analysis, comparing the estimated means of each level.
+
+```{r}
+# We have to provide the model (here called fit and the factors we want to contrast
+results <- get_contrasts(fit, "Emotion_Condition")
+print(results$contrasts)
+```
+
+It appears that the negative condition yields a significantly lower valence (i.e., more negative) than the neutral (-74.88 points of difference). At this point, we usually also want to know the means of each conditions. However, we often do it by directly computing the means and SDs of our observed data. But that’s not the cleanest way, as our data might be unbalanced or biased.
+
+The best way to do it is to estimate means based on the fitted model (marginal means). Those were automatically computed when running the get_contrasts function. We just have to extract them.
+
+```{r}
+results$means
+```
+```{r}
+library(ggplot2)
+
+ggplot(results$means, aes(x=Emotion_Condition, y=Mean, group=1)) +
+  geom_line() +
+  geom_pointrange(aes(ymin=CI_lower, ymax=CI_higher)) +
+  ylab("Subjective Valence") +
+  xlab("Emotion Condition") +
+  theme_bw()
+```
+
+### Interakcje
+
+Let’s repeat the previous steps with adding the participant’s sex as a predictor.
+
+```{r}
+fit <- lmer(Subjective_Valence ~ Emotion_Condition * Participant_Sex + (1|Participant_ID), data=emotion)
+anova(fit)
+```
+
+It seems that there is a significant main effect of the emotion condition, as well as an interaction with the participants’ sex. Let’s plot the estimated means.
+
+```{r}
+results2 <- get_contrasts(fit, "Emotion_Condition * Participant_Sex")
+print(results2$means)
+```
+
+```{r}
+ggplot(results2$means, aes(x=Emotion_Condition, y=Mean, color=Participant_Sex, group=Participant_Sex)) +
+  geom_line(position = position_dodge(.3)) +
+  geom_pointrange(aes(ymin=CI_lower, ymax=CI_higher), 
+                  position = position_dodge(.3)) +
+  ylab("Subjective Valence") +
+  xlab("Emotion Condition") +
+  theme_bw()
+
+print(results2$contrasts)
+```
+
+It appears that the differences between men and women is not significant. However, by default, get_contrasts uses the Tukey method for p value adjustment. We can, with an exploratory mindset, turn off the p value correction (or choose other methods such as bonferonni, fdr and such).
+
+```{r}
+results <- get_contrasts(fit, "Emotion_Condition * Participant_Sex", adjust = "none")
+print(results$contrasts)
+```
+
+Without correcting for multiple comparisons, we observe that men rate the negative pictures as significantly less negative than women.

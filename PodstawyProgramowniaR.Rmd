@@ -1,0 +1,1498 @@
+---
+title: "Programowanie w R - podstawy"
+author: "Magda G."
+date: "12 sierpnia 2018"
+output:
+  html_document:
+    highlight: kate
+    theme: spacelab
+  pdf_document:
+    highlight: kate
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Poziom 0
+
+### Podstawowe operacje arytmetyczne:
+
+Z **R** można korzystać jak z kalkulatora. Wpisujemy bezpośrednio do konsoli:
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Dodawanie
+3 + 7
+
+# Odejmowanie
+7 - 3
+
+# Mnożenie
+3 * 7
+
+# Dzielenie
+7/3
+
+# Podnoszenie do kwadratu
+2^3
+
+# Modulo - zwraca resztę z dzielenia
+8 %% 3
+```
+
+***
+
+### Podstawowe funkcje matematyczne:
+
+#### Logarytmy i potęgowanie
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+x=10
+log2(x) # logarithms o podstawie 2 z x
+log10(x) # logaritms o podstawie 10 z x
+exp(x) # eksponenta z x
+```
+***
+#### Funkcje trygonometryczne
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+cos(x) # cosinus z x
+sin(x) # sinus z x
+tan(x) # tangens z x
+acos(x) # arc-cosinus z x
+asin(x) # arc-sinus z x
+atan(x) #arc-tangens z x
+```
+***
+#### Inne funkcje matematyczne
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+abs(x) # wartość bezwzgledna z x
+sqrt(x) # pierwiastek kwadratowy z x
+```
+***
+### Przypisywanie wartości do zmiennych
+
+Zmienne służą do przechowywania wartości
+
+Przykład: cena jabłek w złotówkach przypisana do zmiennej "cena_jablek"
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+cena_jablek <- 2 # Cena jabłek = 2 zł
+
+cena_jablek = 2 # lub inny zapis
+```
+```
+R jest wrażliwy na wielkość liter cena_jablek, to nie to samo, co Cena_jablek
+```
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+cena_jablek # wpisanie nazwy zmiennej wypisuje jej wartość
+print(cena_jablek) # działa tak samo
+```
+
+Na utworzonej zmiennej można wykonywać działania
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+5 * cena_jablek # pomnożyć cenę jabłek przez 5
+
+
+cena_jablek <- 5 # zmienić wartość zmiennej
+cena_jablek
+```
+
+#### Tworzenie 2 zmiennych i wykonywanie obliczeń
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Wysokość prostokąta
+wys <- 10
+# Szerokość prostokąta
+szer <- 5
+# liczenie powierzchni prostokąta
+pow <- wys*szer
+print(pow)
+```
+
+Funkcja **ls()** wyświetla listę zmiennych, które utworzyliśmy. W RStudio wszystkie zmienne wyświetlane sa w panelu *"Environment"*. 
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+ls()
+```
+```
+Kolekcja utworzonnych zmiennych nosi nazwę **Workspace**. 
+Każda zmienna zajmuje pamięć komputera. Przy pracy z dużą ilością danych 
+warto jest usuwać zbędne zmienne.
+```
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+rm(wys, szer) # usuwanie zmiennych znajdujących się w nawiasie
+ls()
+```
+
+***
+
+## Poziom 1
+
+### Podstawowe typy danych
+
+Dane dzielimy na: liczbowe, tekstowe i logiczne
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Dana liczbowa: Ile masz lat?
+wiek <- 28
+# Obiekt tekstowy: Jak masz na imię?
+imie <- "Bartek"
+# Obiekt logiczny: Jesteś naukowcem?
+# (yes/no) <=> (TRUE/FALSE)
+naukowiec <- TRUE
+```
+
+Wektor tekstowy tworzymy wykorzystując ("") lub (''). Jeśli w tekście zmiennej znajduje się cudzysłów lub apostrof, należy zastsować znak ucieczki (\)
+lub w pzrypadku pojawienia się apostofu zdanie objąć cudzysłowem i odwrotnie
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+'My friend\'s name is "George"'
+"My friend's name is \"George\""
+```
+
+Możemy sprawdzić typ wybranej zmiennej
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+class(wiek)
+class(imie)
+```
+
+Stosując funkcje: **is.numeric()**, **is.character()**, **is.logical()** sprawdzamy czy zmienna ma konkretny typ:
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+is.numeric(wiek)
+is.numeric(imie)
+```
+
+Możliwe jest zmienianie typu zmiennej
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+wiek
+as.character(wiek) # zmienia daną liczbową na tekstową. 
+as.numeric(wiek) # Odwrotna zmiana 
+```
+***
+### Wektory (Vector)
+
+Wektor to kombinacja wielu zmiennych liczbowych, tekstowych lub logicznych. Tworzymy wektroy liczbowe, tekstowe i logiczne. Wektor może zawierać tylko jeden typ danych.
+Wektor tworzony jest przy użyciu funkcji **c()**
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# Wiek przyjaciół w postaci wektora liczbowego
+wiek_przyj <- c(27, 25, 29, 26) 
+wiek_przyj
+
+# Imiona przyjaciół jako wektor tekstowy
+przyj <- c("Marta", "Ala", "Janek", "Piotr")
+przyj
+
+# Stan cywilny przyjaciół jako wektor logiczny
+# Czy jest żonaty/ zamężna? (yes/no <=> TRUE/FALSE)
+zajety <- c(TRUE, FALSE, TRUE, TRUE)
+zajety
+
+```
+
+Możlie jest nadawanie wartościom wektora etykiet, które mogą służyć do selekcjonowania odpowiednich danych. Służy do tego funkcja **names()**
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Wektor bez etykiet
+wiek_przyj
+
+# Przypisywanie etykiet
+names(wiek_przyj) <- c("Marta", "Ala", "Janek", "Piotr")
+wiek_przyj
+
+# Tworzenie wektora z etykietami
+wiek_przyj <- c(Marta = 27, Ala = 25, Janek = 29, Piotr = 26)
+wiek_przyj
+```
+
+Każdy wektor ma określona długość. Do jej określania służy funkcja **length()**
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Liczba przyjaciół
+length(przyj)
+```
+
+#### Brakujące wartości
+
+Brakujące wartości zapisywane są jako NA
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# NA - nie ma informacji dotyczącej dzieci
+dzieci <- c(Marta = "yes", Ala = "yes", Janek = NA, Piotr = NA)
+dzieci
+
+is.na(dzieci) # sprawdza czy wektor zawiera brakujące dane
+```
+```
+Występuje też inny rodzaj brakującej wartości NaN, pojawiającej się 
+w wyniku nieprawidłowej kalkulacji np. 0/0 = NaN. Funkcja is.na() obie te zmienne 
+traktuje identycznie.
+```
+#### Wybieranie danych z wektorów
+
+Selekcjonowanie danych
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Wybieramy przyjaciela nr 2
+przyj[2] # indeksowanie przy użyciu []
+
+# Wybieramy przyjaciela nr 2 i 4 
+przyj[c(2, 4)]
+
+# Wybieramy przyjaciela od 1 do 3
+przyj[1:3] # R indeksuje od 1 a nie od 0
+
+# Możliwe jest stosowanie etykiet
+
+wiek_przyj["Ala"]
+
+# Pomijanie danych dzięki stosowaniu indeksowania ujemnego
+przyj[-2] # Wybieramy wszystkich poza 2
+
+# Pominięcie przyjaciół 2 i 4
+przyj[-c(2, 4)]
+
+# Pominięcie przyjaciół  od 1 do 3
+przyj[-(1:3)]
+```
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# Selekcjonowanie z użyciem wektora logicznego
+przyj[zajety == TRUE]
+
+# Selekcjonowanie starzszych niż 27 lat
+przyj[wiek_przyj >= 27]
+
+# Przyjaciele, którzy nie mają 27 lat
+przyj[wiek_przyj != 27]
+
+# Pozbywanie się danych brakujących
+dzieci
+
+dzieci[!is.na(dzieci)] # Zachowuje dane różne od NA (!is.na())
+
+# Zastąpienie NA tekstem "no"
+dzieci[is.na(dzieci)] <- "no"
+dzieci
+```
+```
+Operatory logiczne w R:
+
+* "<"" : mniej niż
+* ">" : więcej niż
+* "<="" : mniej lub równe
+* ">=" : więcej lub równe
+* "==" : równe
+* "!=" : nie równe
+```    
+#### Obliczenia na wektorach
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# podstawowe operacje arytmetyczne i funkcje mogą być zastosowane w dzialaniach na wektorach numerycznych. 
+# Operacje wykonywane są na każdym elemencie wektora po kolei.
+
+# Pensja moich przyjaciół w złotych
+pensja <- c(2000, 1800, 2500, 3000)
+names(pensja) <- c("Marta", "Ala", "Janek", "Piotr") # Przypisanie etykiet
+pensja
+
+# Przemnożenie przez 2
+pensja*2
+
+# Mnożenie przez różne współczynniki
+# Utworzenie wektora współczynników o tej samej długości, co wektor pensja
+wsp <- c(2, 1.5, 1, 3)
+pensja*wsp # Pomnożenie wektorów
+```
+
+#### Inne użyteczne funkcje
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+x <- c(4, 16, 9, 11, 33, 7, 15, 80, 46)
+max(x) # Zwraca maksimum wektora x
+min(x) # Zwraca minimum wektora x
+range(x) # Zwraca zakres wektora x
+length(x) # Zwraca liczbę elementów wektora x
+sum(x) # Zwraca sumę elementów wektora x
+prod(x) # Zwraca iloczyn elementów wektora x
+# Średnią x można policzyć na 2 sposoby
+sum(x)/length(x)
+mean(x) 
+sd(x) # Odchylenie standardowe wektora x
+var(x) # Wariancja elementów wektora x
+sort(x) # Sortowanie wektora x rosnąco
+sort(x, decreasing = TRUE) # Sortowanie wektora x malejąco
+```    
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Korzystajac z wcześniejszych danych możemy policzyć
+sum(pensja)
+mean(pensja)
+range(pensja)
+```
+***
+### Macierze (Matrix)
+
+Mcierze przypominają arkusze Excel'a i podobnie jak one składają się z wielu rzędów i kolumn. Składają się z wielu pojedynczych wektorów **jednego typu**. Wykorzystywane są do przechowywania danych tabelarycznych - zwykle pojedynczy rząd to osobnik/ obserwacja, a kolumna, to zmienna.
+
+Do tworzenia macierzy wykorzystuje sie funkcję `cbind()` lub `rbind()` w następujący sposób:
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Wektory liczbowe
+col1 <- c(5, 6, 7, 8, 9)
+col2 <- c(2, 4, 5, 9, 8)
+col3 <- c(7, 3, 4, 8, 7)
+
+# Połączenie wektorów kolumnami
+tab1 <- cbind(col1, col2, col3)
+tab1
+
+# Zmiana nazw rzędów
+rownames(tab1) <- c("row1", "row2", "row3", "row4", "row5")
+tab1
+```
+```
+cbind(): składa obiekty R kolumnami;
+rbind(): składa obiekty R rzędami;
+rownames(): wypisuje lub ustawia nazwy rzędów macierzy i jej podobnych;
+colnames(): wypisuje lub ustawia nazwy kolumn macierzy i jej podobnych
+```
+Do transponowania macierzy służy funkcja `t()`
+
+```{r, echo = TRUE, comment=NA}
+t(tab1)
+```
+
+Możliwe jest utworzenie macierzy z wykorzystaniem funkcji `matrix()`
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE, dimnames = NULL)
+  # data: opcjonalny wektor danych
+  # nrow, ncol: liczba rzędów i kolumn macierzy
+  # byrow: wartość logiczna. Jeśli FALSE (wartość wyjściowa) macierz wypełniana jest kolumnami, 
+  # w przeciwnym przypadku - rzędami.
+  # dimnames: Lista 2 wektorów zawierająca, odpowiednio, nazwy rzędów i nazwy kolumn.
+
+mdat <- matrix(
+           data = c(1,2,3, 11,12,13), 
+           nrow = 2, byrow = TRUE,
+           dimnames = list(c("row1", "row2"), c("C.1", "C.2", "C.3"))
+           )
+mdat
+```
+
+
+Wymiary macierzy możemy poznać dzięki następującym funkcjom:
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+ncol(tab1) # Liczba kolumn
+nrow(tab1) # Liczba rzędów
+dim(tab1) # Liczba kolumn i rzędów
+```
+
+Do wybierania elementów z macierzy `(my_data[row, col])` służą:
+
+##### **1. dodatnie indeksy:**
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# Wybierz rząd 2
+tab1[2, ]
+
+# Wybierz rzędy od 2 do 4
+tab1[2:4, ]
+
+# Wybierz kilka rzędów nie tworzących zakresu np.: 2 i 4
+tab1[c(2,4), ]
+
+# Wybierz kolomnę 3
+tab1[, 3]
+
+# Wybierz wartość znajdującą się w rzędzie 2 i kolummnie 3
+tab1[2, 3]
+
+
+```
+
+##### **2. nazwy kolumn/ rzędów lub jednocześnie - indeksy i nazwy**
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Wybierz kolumnę 2
+tab1[, "col2"]
+ 
+# Wybierz wartość z rzędu 3 i kolumny 2
+tab1[3, "col2"]
+```
+
+##### **3. indeksowanie wartościami ujemnymi - wykluczanie niektórych kolumn/ rzędów**
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Usuń kolumnę 1
+tab1[, -1]
+```
+
+##### **4. wektory logiczne**
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+col3 <- tab1[, "col3"] 
+# Wybieranie kolumny (zmiennej), która będzie podstawą selekcji, tu: col3. 
+# W col3 wybieramy elementy większe lub równe 4 i zatrzymujemy w macierzy 
+# jedynie te wiersze, które spełniają ten warunek.
+# W kolumnie 3 przeprowadzone zostaje sprawdzenie warunku i R w pamięci 
+# zapisuje wartości TRUE lub FALSE dla każdego elementu. 
+# Zatrzymywane są wartości TRUE
+
+tab1[col3 >= 4, ] 
+```
+
+#### Obliczenia na macierzach
+
+Mozliwe jest przeprowadzanie prostych kalkulacji na macierzach
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+tab1*2 # Mnożenie elementów macierzy
+
+log2(tab1) # Oblicznaie logarytmu dla każdego elementu macierzy
+
+rowSums(tab1) # Sumowanie wartości po rzędach
+
+colSums(tab1) # Sumowanie wartości po kolumnach
+
+rowMeans(tab1) # Średnia wartość w każdym rzędzie 
+
+colMeans(tab1) # Średnia wartość w każdej kolumnie
+```
+
+#### Kożystanie z funkcji `apply()`
+
+Funkcji tej można użyć w celu wykonania obliczeń (na rzędach i kolumnach macierzy) z wykorzystaniem wbudowanych funkcji
+
+###### **Uproszczona forma funkcji `apply()` jest następująca:**
+```
+apply(X, MARGIN, FUN),
+
+gdzie:
+X - macierz;
+MARGIN - możliwe wartości, to 1 dla rzędów lub 2 dla kolumn;
+FUN - wybrana funkcja do zastosowania na rzędach/ kolumnach.
+```
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Policz średnią rzędów
+apply(tab1, 1, mean)
+
+# Oblicz/ wyszukaj medianę w rzędach
+apply(tab1, 1, median)
+
+# Policz średnie kolumn
+apply(tab1, 2, mean)
+```
+
+***
+### Czynniki (Factor)
+
+Zmienne te reprezentują kategorie lub grupy danych. Do tworzenia czynników wykorzystuje się funkcję `factor()`
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# Tworzenie
+grupa_przyj <- factor(c(1, 2, 1, 2))
+grupa_przyj
+```
+
+Zmienna *'grupa_przyj'* składa się z 2 kategorii: 1 i 2 - poziomu czynnika. Funkcja `levels()` wypisuje te poziomy.
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Jakie są poziomy zmiennej?
+levels(grupa_przyj)
+```
+
+Możliwa jest zmiana nazw poziomów czynnikóW
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Zmiana nazw poziomów zmiennej
+levels(grupa_przyj) <- c("przyjaciel", "kolega")
+grupa_przyj
+```
+
+Można wymusić kolejność wyświetlania poziomów czynników
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Zmiana porządku wyświetlania poziomów
+grupa_przyj <- factor(grupa_przyj, 
+                      levels = c("kolega", "przyjaciel"))
+grupa_przyj
+
+summary(grupa_przyj) # Wyświetla liczbę obserwacji należących do każdego poziomu
+```
+
+Do sprawdzenia czy dana zmienna jest czynnikiem służy funkcja logiczna `is.factor()` a funkcja `as.factor()` służy do zamiany innej zmiennej na czynnik 
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Czy 'grupa_przyj' to czynnik?
+is.factor(grupa_przyj)
+
+# Czy 'zajety' jest czynnikiem?
+is.factor(zajety)
+
+# Zamienić 'zajety' na czynnik
+as.factor(zajety)
+```
+
+Do policzenia wartości z podziałem na grupy można wykorzystać czynniki. Funkcja `tapply()` posłuży do użycia funkcji (tu średniej) do obliczeń w grupach.
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+pensja
+grupa_przyj
+    
+# Średnia pensja w grupach
+sred_pens <- tapply(pensja, grupa_przyj, mean)
+sred_pens
+
+# Wielkość każdej z grup
+tapply(pensja, grupa_przyj, length)
+
+# Tworzenie tabeli rozdzielczej/ krzyżowej
+table(grupa_przyj)
+
+# Badanie zależności pomiędzy zmiennymi
+table(grupa_przyj, zajety)
+```
+***
+### Ramki danych (Data Frame)
+
+Ramka danych przypomina macierz, ale może zawierać zmienne różnego typu - kolumny z wartościami numerycznymi, logicznymi i tekstowymi. Rzędy sa pojedynczymi obserwacjami (np. osobnikami) a kolumny poszczególnymi zmiennymi.
+Ramki danych tworzy się przy użyciu funkcji `data.frame()`
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# tworzenie ramki danych
+Przyjaciele <- data.frame(
+  imie = przyj,
+  wiek = wiek_przyj,
+  wzrost = c(180, 170, 185, 169),
+  zajety = zajety
+)
+
+Przyjaciele
+```
+
+Do sprawdzenia, czy dany obiekt jest ramka danych służy funkcja `is.data.frame()`
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+is.data.frame(Przyjaciele) # ramka dancyh
+is.data.frame(tab1) # macierz
+
+# Zamiana macierzy w ramkę danych
+class(tab1)
+tab1_2 <- as.data.frame(tab1)
+class(tab1_2)
+```
+
+Ramkę danych można transpozować podobnie jak macierz. Jednakże rodzaje danych zostaja wtedy ujednolicone, często do typu tekstowego.
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+t(Przyjaciele)
+```
+
+#### Wybieranie danych z ramki danych
+
+Wyboru danych z kolumn lub rzeędów można dokonać używając i nazw i ich położenia w ramce danych (np. kolumna 1, kolumna 2 i td.)
+
+##### **1. indeksowane po nazwie i położeniu**
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# Wybór danych z kolumny 'imie'
+Przyjaciele$imie # Korzystamy ze znaku $
+Przyjaciele[, 'imie'] # Wybieramy kolumnę o danej nazwie
+
+# Wybieranie więcej niż 1 kolumny
+Przyjaciele[ , c(1, 3)] # Wybieramy 2 kolumny 1 i 3
+
+# Wybieramy wszystkie kolumny bez 1
+Przyjaciele[, -1] # Wartość ujemna wskazuje na to, że kolumna 1 ma zostać pominięta
+
+```
+
+##### **2. indeksowane na podstawie danych**
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# Wybierz przyjaciół starszych lub 27-letnich
+
+Przyjaciele$wiek >= 27 # Znajduje rzędy spełniające ten warunek
+# Wartości spełniające warunek oznaczane są TRUE
+
+# Zapis oznacza - wybrać wszystkie rzędy gdzie wiek >= 27 i wypisać wszystkie wartości kolumn w tym rzędzie
+Przyjaciele[Przyjaciele$wiek >= 27, ] 
+
+# Ograniczenie liczby wyświetlanych kolumn
+# W wybranych rzędach wyświetli tylko 2 pierwsze kolumny; używamy położenia kolumny c(1, 2)
+Przyjaciele[Przyjaciele$wiek >= 27,  c(1, 2)] 
+Przyjaciele[Przyjaciele$wiek >= 27, c("imie", "wiek")] # Uzyskujemy to samo, ale używając nazw kolumn
+
+# Jeśli kryteria wyboru są długie i nie wygodne w używaniu, można zapisac je do zmiennych 
+lat27 <- Przyjaciele$wiek >= 27
+lat27
+cols <- c("imie", "wiek")
+cols
+Przyjaciele[lat27, cols] # zmienne umożliwiaja wybór odpowiednich danych
+```
+
+##### **3. Selekcja z zastosowaniem funkcji `subset()`**
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# Wybieramy przyjaciół , gdzie wiek >= 27
+subset(Przyjaciele, wiek >= 27)
+```
+
+Ramki danych można rozszerzać o kolejne dane
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# Dodanie kolumny 'grupa' do 'Przyjaciele'
+Przyjaciele$grupa <- grupa_przyj
+Przyjaciele
+
+cbind(Przyjaciele, grupa = grupa_przyj) # Przyłaczanie kolumny z użyciem cbind()
+
+# rbind() - przyłącza rzędy - obserwacje
+
+```
+
+```
+W przypadku ramek danych z wartościami liczbowymi możliwe 
+jest stosowanie funkcji rowSums(), olSums(), colMeans(), rowMeans()
+i apply() jak opisano dla macierzy
+```
+***
+### Listy (List)
+
+Lista, to zbiór obiektów, które mogą być wektorami, macierzami, ramkami danych i tp. Lista moze składać się ze wszystkich typów obiektów R.
+
+#### Tworzenie listy
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# Utwórz listę
+rodzina <- list(
+  matka = "Zuzanna", 
+  ojciec = "Piotr",
+  siostry = c("Alicja", "Monika"),
+  wiek_siostr = c(12, 22)
+  )
+
+rodzina
+
+# Nazwy elementów listy
+names(rodzina)
+
+# Liczba elementów listy 
+length(rodzina)
+```
+
+Lista rodzina zawiera 4 składniki, do których można odnosić się niezależnie stosując **rodzina[[1]]**, **rodzina[[2]]** i td.
+
+```
+Do wybierania elementów z listy używa się ich nazw, bądź indeksów:
+"rodzina$matka" = "rodzina[[1]]"
+"rodzina$ojciec" = "rodzina[[2]]"
+```
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# Zastosowanie nazwy [1/2]
+rodzina$ojciec
+
+# Zastosowanie nazwy [2/2]
+rodzina[["ojciec"]]
+
+# zastosowanie indeksu
+rodzina[[1]]
+rodzina[[3]]
+
+# Wybieranie elementu składowej listy
+# Wybierz ([1]) element z rodzina[[3]]
+rodzina[[3]][1] 
+```
+
+#### Dodawanie kolejnych elementów do listy
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# dodawanie elementów
+rodzina$dziadek <- "Jan"
+rodzina$babcia <- "Maria"
+rodzina
+```
+
+Możliwe jest łączenie list
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+list_a <- tab1
+list_b <- wiek_przyj
+list_c <- rodzina
+
+list_abc <- c(list_a, list_b, list_c) # Lista składająca się z połączonych elementów
+names(list_abc)
+length(list_abc)
+list_abc[2]
+list_abc[[2]]
+list_abc[[22]]
+list_abc[[22]][2]
+```
+***
+## Poziom 2
+
+### Importowanie danych
+```
+W RStudio zaimplementowano 'interface' graficzny ułatwiający importowanie danych
+```    
+#### Importowanie danych z plików tekstowych
+
+##### Podstawowe funkcje R do importowania plików
+
+Funkcja `read.table()` jest podstawową funkcją do wczytywania danych tabelarycznych. Dane importowane sa jako ramka danych. W zależności od typu importowanych plików stsowane są wariacje funkcji `read.table()`: 
+
+* `read.csv()` - dla plików '.csv' 
+* `read.csv2()` - wariant dla dla plików '.csv' w krajach, gdzie wartości dziesiętne oddzielane są przecinkiem, a pola średnikiem (Polska) 
+* `read.delim()` - dla plików '.txt' z wartościami dziesiętnymi oddzielanymi kropką 
+* `read.delim2()` - dla plików '.txt' z wartościami dziesiętnymi oddzielanymi przecinkiem.
+
+###### **Uproszczona formuła tych funkcji wygląda następująco:**
+```
+# wczytywanie danych tabelarycznych
+read.table(file, header = FALSE, sep = "", dec = ".")
+
+# wczytywanie (".csv")
+read.csv(file, header = TRUE, sep = ",", dec = ".", ...)
+
+# wariant dla (".csv") z wartościami dziesiętnymi oddzielanymi przecinkiem
+read.csv2(file, header = TRUE, sep = ";", dec = ",", ...)
+
+# pliki rozdzielane tabulatorami - rozdzielane "." oraz ","
+read.delim(file, header = TRUE, sep = "\t", dec = ".", ...)
+read.delim2(file, header = TRUE, sep = "\t", dec = ",", ...),
+
+gdzie:
+
+file: ścieżka do pliku
+sep: separator “\t” dla plików rozdzielanych tabulatorami
+header: wartość logiczna; TRUE - read.table() zakłada, że pierwszy rząd, 
+to nagłówki kolumn. Jeśli tak nie jest, należy podać argument: header = FALSE.
+dec: znak używany, jako oddzielenie wartości dziesiętnych.
+
+np.:
+# Wczytywanie pliku .txt o nazwie "mtcars.txt"
+my_data <- read.delim("mtcars.txt")
+
+# Wczytywanie pliku .csv o nazwie "mtcars.csv"
+my_data <- read.csv("mtcars.csv")
+```
+
+Pliki, które znajdują się w bieżącym katalogu (aby sprawdzić w jakim katalogu pracujemy możemy wykorzystac fonkcje `getwd()`) nie wymagają podawania ścieżki dostępu, tylko ich nazwy. W innych przypadkach należy podać pełną ścieżkę dostępu. W celu ułatwienia wyboru pliku stworzono funkcję `file.choose()`, która umożliwia interaktywny wybór pliku i automatycznie uzupełnia ścieżkę dostępu
+```
+# Wczytywanie pliku .txt
+my_data <- read.delim(file.choose())
+
+# Wczytywanie pliku .csv
+my_data <- read.csv(file.choose())
+
+```
+Jeśli dane zawierają kolumny z tekstem, R może założyć, że są to czynniki, albo dane grupujące (np.: “good”, “good”, “bad”, “bad”, “bad”). Aby zapobiec przekształceniu tekstu w czynniki i zachowaniu typu danych tekstowych (*string*), należy użyć opcji `stringsAsFactor = FALSE` do funkcji `read.delim()`, `read.csv()` i `read.table()`.
+
+```
+my_data <- read.delim(file.choose(), 
+                      stringsAsFactor = FALSE)
+```
+
+Możliwe jest również podanie innego typu separatora np.: “|” jako opcji funkcji `read.table()`
+
+```
+my_data <- read.table(file.choose(), 
+                      sep ="|", header = TRUE, dec =".")
+```
+***
+##### Korzystanie z możliwości pakietu `readr`
+
+Pakiet `readr` umożliwia szybkie i przyjazne użytkownikowi importowanie danych do R. W porównaniu do podstawowych funkcji R pakiet `readr` jest znacznie szybszy (ca. 10x), wyświetla pasek postępu i posiada pełną funkcjonalność funkcji natywnych R.
+Pakiet posiada funkcje dla: plików tekstowych, linii plików i całych plików.
+`read_delim()` to podstawowa funkcja wczytywania plików z pakietu `readr` i w zależności od typu pliku imporotwanego istnieją warianty: `read_csv()` - dla warości rozdzielanych przecinkami (','); `read_csv2()` - dla wartości rozdzielanych średnikami (';'); `read_tsv()` - dla wartości rozdzielanych tabulatorami ('\t'). 
+
+###### **Uproszczona formuła tych funkcji wygląda następująco:**
+```
+# wczytywanie danych tabelarycznych
+read_delim(file, delim, col_names = TRUE)
+
+# wczytywanie (".csv")
+read_csv(file, col_names = TRUE)
+
+# wariant dla (".csv") z wartościami dziesiętnymi oddzielanymi przecinkiem
+read_csv2(file, col_names = TRUE)
+
+# pliki rozdzielane tabulatorami
+read_tsv(file, col_names = TRUE)
+
+gdzie:
+
+file: ścieżka do pliku, link lub wektor z danymi. Pliki o rozszerzeniach 
+.gz, .bz2, .xz, lub .zip są automatycznie rozpakowywane. 
+Pliki rozpoczynające sie od “http://”, “https://”, “ftp://”, lub “ftps://” są automatycznie pobierane. 
+delim: znak rozdzielający dane w pliku
+col_names: TRUE lub FALSE lub wektor z wartościami będącymi nagłówkami kolumn. 
+Jeśli TRUE - to pierwszy rząd uznawany jest jako nazwy kolumn.
+
+np.:
+# importowanie pliku tekstowego .txt o nazwie "mtcars.txt"
+my_data <- read_tsv("mtcars.txt")
+
+# importowanie pliku tekstowego .csv o nazwie "mtcars.csv"
+my_data <- read_csv("mtcars.csv")
+
+```
+Podobnie jak w przypadku natywnych funkcji R pliki znajdujące sie poza bieżącym katologiem muszą byc importowane poprzez podanie pełnej ścieżki dostepu i podobnie możliwe jest stosowanie funkcji `file.choose()`
+```
+# Wczytywanie pliku .txt
+my_data <- read_tsv(file.choose())
+
+# Wczytywanie pliku .csv
+my_data <- read_csv(file.choose())
+
+# wczytywanie pliku tekstowego z wyszczególnionym separatorem (tu: "|")
+my_data <- read_delim(file.choose(), sep = "|")
+```
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# install.packages("readr") # wykonać, jeśli nie zainstalowany 
+library("readr")
+my_data <- read_csv("city_commutes.csv")
+problems <- problems(my_data)
+my_data
+problems
+```
+
+Pakiet `readr` próbuje automatycznie wykryć rodzaj danych znajdujących się w każdej kolumnie. W sytuacji, w którrej rozpoznał dane błędnie, może pojawić sie wiele ostrzeżeń. Aby temu zapobiec lub naprawić można użyc dodakowago argumentu podczas importowania `col_type()`, umożliwiającego podanie typu danych w kolumnach. Dostępne są następujące typy danych:
+
+* `col_integer()`: dane numeryczne (alias = “i”)
+* `col_double()`: dane liczbowe (alias = “d”).
+* `col_logical()`: wartości logiczne (alias = “l”)
+* `col_character()`: zachowuje tekst, nie zmienia na czynniki (alias = “c”).
+* `col_factor()`: czynniki lub zmienne grupujące (alias = “f”)
+* `col_skip()`: pomijanie kolumny (alias = “-” lub “_“)
+* `col_date()` (alias = “D”), col_datetime() (alias = “T”) i col_time() (“t”) określa daty, daty i czas, oraz czas.
+
+```
+Przykładowo (kolumna x zawiera wartości numeryczne (i) 
+a kolumna treatment = “character” (c):
+
+read_csv("my_file.csv", col_types = cols(
+  x = "i", # wartości numeryczne
+  treatment = "c" # kolumna z tekstem
+))
+```
+***
+##### Wczytywanie linii z pliku - funkcja `read_lines()`
+
+###### **Uproszczona formuła funkcji wygląda następująco:**
+```
+read_lines(file, skip = 0, n_max = -1L)
+
+
+    file: ścieżka do pliku
+    skip: liczba linii, które mają być pominięte zanim rozpocznie się wczytywanie
+    n_max: liczba linii do wczytania. Jeśli n = -1, zostana wczytane wszystkie linie.
+```
+Funkcja `read_lines()` zwraca wektor tekstowy, gdzie 1 elemnt, to 1 cały rząd
+
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+plik <- system.file("extdata/mtcars.csv", package = "readr") # plik demo
+dane <- read_lines(plik) # wczytywanie danych z rzędów do kolejnych wektorów 1-elementowych
+head(dane)
+
+```
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+plik <- "city_commutes.csv" # plik z bieżącego katalogu
+miasta <- read_lines(plik, n_max = 3) # wczytywanie 3 linii do 3 wektorów
+miasta
+
+```
+
+***
+##### Wczytywanie całego pliku - funkcja `read_file`
+
+###### **Uproszczona formuła funkcji wygląda następująco:**
+```
+read_file(file)
+```
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+my_file <- system.file("extdata/mtcars.csv", package = "readr") # demo
+read_file(my_file) # wczytanie całego pliku do 1 wektora
+```
+
+
+***
+#### Importowanie danych z Excel (xls|xlsx) do R	
+
+Odpowiednie przygotowanie pliku Excel
+
+1. Nazwy rzędów i kolumn
+  i) Pierwszy rząd ma zawierać nazwy kolumn. **Kolumny zwykle reprezentuja zmienne**
+  ii) W pierwszej kolumnie należy umieścic nazwy rzędów. **Zwykle rzędy reprezentują obserwacje**
+  iii) Każdy rząd powinien być **unikalny** - należy usunąć lub zastąpić zduplikowane nazwy
+
+2. Nazwy powinny być zgodne z konwencją wykorzstywaną przez R
+  i) Unikać **spacji** w nazwach: dlugi_skok, dlugi.skok - dobre nazwy; dlugi skok - zła nazwa kolumny/ rzędu
+  ii) Unikać nazw z **symbolami specjalnymi**: ?, $, *, +, #, (, ), -, /, }, {, |, >, < i tp. Jedym wyjątkiem jest podkreślenie
+  iii) Nie używać cyfr na początku nazwy: sport_100m i x100m - dobre nazwy; 100m - zła nazwa kolumny/ rzędu
+	 iv) R jest **wrażliwy na wielkość czcionki**: Nazwa, NAZWA, nazwa - to różne nazwy
+  v) Usuń puste rzędy ze swoich danych
+  vi) Usuń wszystkie komentarze z arkuszy
+  vii) Zastąp brakujące dane wartościa **NA**
+  viii) kolumny z datami powinny mieć format **DD/MM/RRRR**
+
+```  
+Uporządkowany plik najlepiej zapsać jako .txt (plik tekstowy) lub .csv 
+(plik z warościami rozdzielanymi przecinkami), co ułatwia importowanie danych do R. 
+Nie jest to konieczne - można zachować format Excel.
+```
+***
+
+##### 1. "Przeklejanie danych"
+
+###### W wybranym pliki Excel wybrać i przekopiować zakres danych (ctrl + c)
+```
+dane <- read.table(file = "clipboard", sep = "\t", header=TRUE)
+```
+##### 2. Importowanie danych przy użyciu pakietu `readxl`
+
+To podejście wymaga zainstalowania i załadowanie pakietu `readxl`
+  		
+```  		
+install.packages("readxl")
+library("readxl")`
+      
+dane <- read_excel("my_file.xls")
+          lub
+dane <- read_excel("my_file.xlsx")
+```
+###### Jeśli brakujące dane oznaczone są jakimś innym znakiem niż pusta komórka, należy go wyszczególnić
+```      
+dane <- read_excel("data.xlsx", na = "---")
+```
+###### Kod zakłada, że plik znajduje się w katalogu, w którym pracujemy. Aby sprawdzć ścieżkę do obecnego katalogu używa się `getwd()`. Funkcja `file.choose()` pozwala na interaktywne wybieranie pliku.
+```
+dane <- read_excel(file.choose())
+      
+podobnie w przypadku innych rodzajów plików:
+pliki .txt	# dane <- read.delim(file.choose())
+pliki .csv	# dane <- read.csv(file.choose())
+```    
+###### Konkretny arkusz Excel wskazuje się z zastosowaniem opcji `sheet =` wykorzystując jego nazwę lub numer
+```
+dane <- read_excel("data.xlsx", sheet = "data") # nazwa arkusza
+dane <- read_excel("data.xlsx", sheet = 2) # nr arkusza
+```
+***
+#### Importowanie danych z internetu
+
+Funkcje `read.delim()`, `read.csv()` i `read.table()` można wykorzystać do importowania danych z sieci np.:
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# web <- read.delim("http://www.sthda.com/upload/boxplot_format.txt")
+# head(web)
+
+```
+
+Podobną funkcjonalność mają funkcje `read_delim()`, `read_csv()` i `read_tsv()` z pakietu `readr`
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# install.packages("readr") # wykonać, jeśli nie zainstalowany
+library("readr")
+# my_data <- read_tsv("http://www.sthda.com/upload/boxplot_format.txt")
+# head(my_data)
+```
+
+***
+### Eksportowanie danych - podstawowe funkcje R
+
+##### **Formuła funkcji `write.table`**
+```
+write.table(x, file = "", append = FALSE, quote = TRUE, sep = " ", ...)
+
+write.csv(...) # zapisywanie w formacie rozdzielanym przecinkami
+write.csv2(...) # zapisywanie w formacie rozdzielanym średnikami
+
+Argumenty:
+x - obiekt do zapisania; najlepiej macierz lub ramka danych. Każdy inny rodzaj danych zamieniany będzie 
+na ramke danych
+file - ścieżka dostępu i nazwa pliku, do którego dane będą zapisywane; "" oznacza wypisanie 
+w konsoli/ terminalu	
+append - wartość logiczna; jeślieśli TRUE - wartości będą dopisywane do pliku, jeśli FALSE - plik 
+zostanie nadpisany.
+quote - wartość logiczna; jeśli	TRUE, każdy z elementów otaczany będzie cudzysłowami, wartości liczbowe 
+zamieniane są tym sposobem w indeksy, jeśli FALSE - wartości nie są wstawiane w cudzysłów
+sep	- znak rozdziału pól; " " - spacja, "\t" - tabulator; "," - przecinek
+... - inne opcje zapisu
+```
+
+### Eksportowanie danych z wykorzystaniem pakietu `readr`
+
+##### **Formuła funkcji pakietu `readr`**
+```
+Zapisuje dane x, obiekty R, do pliku o określonej 
+nazwie i ścieżce dostępu:
+
+# plik wyjściowy rozdzielany przecinkami
+write_csv(x, path, na = "NA", append = FALSE,
+col_names = !append)
+
+# plik wyjściowy z wybranym separatorem
+write_delim(x, path, delim = " ", na = "NA",
+append = FALSE, col_names = !append)
+
+# plik CSV dla Excel'a
+write_excel_csv(x, path, na = "NA", append =
+FALSE, col_names = !append)
+
+# zapisywanie całego obiektu do 1 elementu tekstowego
+write_file(x, path, append = FALSE)
+
+# zapisywanie wektora do pliku jako 1 elementu
+write_lines(x,path, na = "NA", append = FALSE)
+
+# zapis z kompresowaniem pliku
+write_rds(x, path, compress = c("none", "gz",
+"bz2", "xz"), ...)
+
+# plik wyjściowy rozdzielany tabulatorami
+write_tsv(x, path, na = "NA", append = FALSE,
+col_names = !append)
+
+Argumenty:
+x - ramka danych zapisywana na dysk
+path - ścieżka dostępu dla tworzonego pliku
+delim - znak używany do oddzielania wartości - pojedynczy znak; wartość 
+domyślna to (" ") spacja 
+na - wartość wstawiana w przypadku brakujących danych; domyślnie NA
+append - wartość logiczna; jeślieśli TRUE - wartości będą dopisywane do pliku, 
+jeśli FALSE - plik zostanie nadpisany.
+col_names - określa, czy uwzględnić nagłówki przy zapisie
+```
+
+***
+***
+### Tibbles alternatywa dla ramek danych
+
+W porównaniu do tradycyjnej funkcji `data.frame()` (tworzącej ramiki danych) nowa funkcja `data_frame()` (tworząca `TIBBLES`) :
+
+* nie zamienia łańcuchów na czynniki
+* nie zmienia nazw zmiennych
+* nie tworzy nazw rzędów
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# install.packages("tibble") # jeśli wymagana jest instalacja 'od'hash'ować
+library("tibble")
+
+# Tworzenie ramki danych poleceniem data.frame()
+przyjaciele <- data.frame(
+  imie = c("Marta", "Ala", "Janek", "Piotr"),
+  wiek_przyj = c(27, 25, 29, 26),
+  wzrost = c(180, 170, 185, 169),
+  zajety = c(TRUE, FALSE, TRUE, TRUE)
+)
+
+przyjaciele
+
+przyjaciele2 <- data_frame(
+  imie = c("Marta", "Ala", "Janek", "Piotr"),
+  wiek_przyj = c(27, 25, 29, 26),
+  wzrost = c(180, 170, 185, 169),
+  zajety = c(TRUE, FALSE, TRUE, TRUE)
+)
+
+przyjaciele2
+
+```
+
+ 
+#### Konwertowanie danych do 'tibbles'
+
+```
+Jeśli do importowania danych użyto funkcji pakietu 'readr', to nie ma konieczności przekształcania danych, 
+bo importowane są jako tbl_df (tibble data frame).
+```
+
+Do konwertowania danych zaimportowanych/ utworzonych jako ramki danych, listy, macierze wykorzystuje sie funkcję `as_data_frame` z pakietu `tibble`
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+library("tibble")
+
+data("iris") # korzystamy z wbudowanych danych 'iris'
+class(iris) # klasa danych
+head(iris, 6)
+```
+
+```{r, echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+# Convert iris data to a tibble
+irysy <- as_data_frame(iris) # konwertowanie do tibbles
+class(irysy) # klasa danych
+irysy
+
+```
+
+Możliwe jest konwertowanie odwrotne - 'tibbles' do ramek danych przy użyciu funkcji `as.data.frame(my_data)`
+
+##### **Zalety 'tibbles' w porównaniu do ramek danych:**
+
+* 'Tibbles' mają przyjazny sposób wyświetlania - pokazują tylko 10 pierwszych rzędów i wszystkie kolumny, które mieszczą sie na ekranie - jest to szczególne przydatne, gdy pracuje się z dużymi zestawami danych. 
+* Każda kolumna ma podany w nagłówku rodzaj danych, które zawiera: `<dbl>` dla danych liczbowych (`double`); `<fct>` - dla czynników (`factor`); `<chr>` - dla tekstowych (`character`) i `<lgl>` dla logicznych  (`logical`).
+* Możliwa jest zmiana standardowego sposobu wyświetlania z zastosowaniem opcji: `options(tibble.print_max = 20, tibble.print_min = 6)` # zmaian wyświetlania maksymalnej i minimalnej ilości wierszy; `options(tibble.print_max = Inf)` # wyświetlanie wszystkich rzędów ; `options(tibble.width = Inf)` # wyświetlanie wszystkich kolumn.
+* Wyselekcjonowane dane zawsze będą zapisywane jako 'tibble' - nie trzeba stosować opcji `drop = FALSE`, co było konieczne w przypadku tradycyjnych ramek danych.
+
+***
+***
+
+### Podstawowe wykresy
+
+#### **Wykres punktowy**
+
+Stosowany głównie do przedstawiania zależności między zmienną x i y. Może być zastosowany do 1 zmiennej, w takim przypadku na osi x pojawiają się warości porządkowe.
+
+Formuła
+```
+plot(x, y, ...)
+
+Argumenty
+
+x - koordynaty punktów na wykresie (może być wygenerowany automatycznie, jeżeli używamy danych z wektora)
+y - koordynaty wykresu; nie są podawane, gdy x jest wektorem
+... - dodatkowe informacje związane z wykresem
+```
+
+Przykłady
+
+```{r, fig.height = 5, fig.width = 6, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+require(stats) # dla lowess, rpois, rnorm
+plot(cars)
+lines(lowess(cars))
+
+plot(table(rpois(100, 5)), type = "h", col = "red", lwd = 10,
+     main = "rpois(100, lambda = 5)") # wykres dla danych dyskretnych wygenerowanych losowo, rozkład Poisson'a
+```
+
+#### **Wykres słupkowy**
+
+Służy głównie do przedstawiania danych kategorycznych
+
+Formuła
+```
+barplot(height, ...)
+
+Argumenty
+
+height - wektor lub macierz opisująca słupki (wysokość)
+width - opcjonalnie podawany wektor określający szerokość słupków
+... - inne opcje wykresu
+```
+
+Przykłady
+
+```{r, fig.height = 5, fig.width = 8, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+par(mfrow = c(1,2))
+require(grDevices) # kolory wykresu
+tN <- table(Ni <- stats::rpois(100, lambda = 5))
+r <- barplot(tN, col = rainbow(20))
+lines(r, tN, type = "h", col = "red", lwd = 2) # type = "h" to wykres słupkowy
+
+barplot(tN, space = 1.5, axisnames = FALSE,
+        sub = "barplot(..., space= 1.5, axisnames = FALSE)")
+```
+
+```{r, fig.height = 5, fig.width = 10, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+VADeaths # Liczba zgonóW w satnie Virginia w różnych kategoriach wiekowych
+par(mfrow = c(1,2))
+barplot(VADeaths, names.arg = c("M_wieś", "K_wieś", "M_miasto", "K_miasto"))
+barplot(VADeaths, beside = TRUE, names.arg = c("M_wieś", "K_wieś", "M_miasto", "K_miasto"))
+
+```
+
+```{r, fig.height = 6, fig.width = 6, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+# legenda
+barplot(height = cbind(x = c(465, 91) / 465 * 100,
+                       y = c(840, 200) / 840 * 100,
+                       z = c(37, 17) / 37 * 100),
+        beside = FALSE,
+        width = c(465, 840, 37),
+        col = c(1, 2),
+        legend.text = c("A", "B"),
+        args.legend = list(x = "topleft"))
+```
+
+#### **Wykres pudełkowy**
+
+Służy do wizualizacji rozrzutu danych oraz jego porównywania między badanymi grupami
+
+Formuła
+```
+boxplot(x, ...) # dla danych
+boxplot(formula, data, ...) # dla formuły
+		
+Argumenty:
+formula	- formuła typu y ~ grp, gdzie y jest wektorem numerycznym powstałym przez grupowanie danych względem czynnika grupującego 'grp' (zwykle czynnika)
+data - ramka danych lub lista, na której została zastosowana formuła 
+x - wektor liczbowy lub lista składająca się z wektorów, an podstawie, których ma być utworzony wykres
+```
+
+Przykłady
+
+```{r, fig.height = 5, fig.width = 10, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+par(mfrow = c(1,2))
+boxplot(count ~ spray, data = InsectSprays, col = "lightgray") # wykorzystanie formuły
+boxplot(decrease ~ treatment, data = OrchardSprays,
+        log = "y", col = "bisque")
+```
+
+```{r, fig.height = 6, fig.width = 6, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+rb <- boxplot(decrease ~ treatment, data = OrchardSprays, col = "bisque")
+title("Porównanie mediany i średniej +/- SD")
+mn.t <- tapply(OrchardSprays$decrease, OrchardSprays$treatment, mean)
+sd.t <- tapply(OrchardSprays$decrease, OrchardSprays$treatment, sd)
+xi <- 0.3 + seq(rb$n)
+points(xi, mn.t, col = "orange", pch = 18)
+arrows(xi, mn.t - sd.t, xi, mn.t + sd.t,
+       code = 3, col = "pink", angle = 75, length = .1)
+```
+
+```{r, fig.height = 5, fig.width = 6, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+mat <- cbind(Uni05 = (1:100)/21, Norm = rnorm(100),
+             `5T` = rt(100, df = 5), Gam2 = rgamma(100, shape = 2))
+df.mat <- as.data.frame(mat)
+par(las = 1) # horyzontalne ustawienie etykiet
+boxplot(df.mat, main = "boxplot(*, horizontal = TRUE)", horizontal = TRUE)
+```	
+
+#### **1-wymiarowy wykres punktowy**
+
+Przedstawia rozkład danych w postaci punktów i jest dobrą alternatywą dla wykresów pudełkowych, gdy dane są małoliczne
+
+Formuła
+```
+stripchart(x, data, ...)
+		
+Argumenty:
+x - dane liczbowe w postaci wektora lub listy wektorów liczbowych (każdy odpowiadający komponencie wykresu). Jeśłi używamy formuły y ~ g do grupowania danych
+dane dzielone sa na poziomy odpowiadające poziomom 'g'
+data - ramka danych lub lista, z której pobierane będa dane
+... - inne parametry
+```
+
+Przykłady
+
+```{r, fig.height = 8, fig.width = 8, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+stripchart(decrease ~ treatment,
+    main = "stripchart(OrchardSprays)",
+    vertical = TRUE, log = "y", data = OrchardSprays)
+	
+x <- stats::rnorm(50) # dane losowe o rozkładzie normalnym
+xr <- round(x, 1)
+stripchart(x) ; m <- mean(par("usr")[1:2])
+text(m, 1.04, "stripchart(x, \"overplot\")")
+stripchart(xr, method = "stack", add = TRUE, at = 1.2)
+text(m, 1.35, "stripchart(round(x,1), \"stack\")")
+stripchart(xr, method = "jitter", add = TRUE, at = 0.7)
+text(m, 0.85, "stripchart(round(x,1), \"jitter\")")
+
+```	
+
+#### **Histogram**
+
+Przedstawia liczebność danych podzielonych na zakresy
+
+Formuła
+```
+hist(x, breaks, ...)
+		
+Argumenty:
+x - wektor, na podstawie, którego budowany jest histogram	
+breaks - dane dotyczące podziału danych na zakresy (bins)
+freq - jeśli TRUE, dane przedstawione są jako częstości, jeśli FALSE - wykreślana jest gęstość funkcji (wartość wszystkich elementów wykresu sumowana jest do 1)
+```
+
+Przykłady
+
+```{r, fig.height = 5, fig.width = 6, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+require(stats)
+set.seed(14) 
+x <- rchisq(100, df = 4) # losowe generowanie danych
+hist(x)	
+```
+
+```{r, fig.height = 6, fig.width = 10, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+par(mfrow = c(1, 2))
+hist(islands)
+utils::str(hist(islands, col = "gray", labels = TRUE))
+```
+
+#### **Wykres mozaikowy**
+
+Przedsatwia dane zebrane w tabeli krzyżowej
+
+Formuła
+```
+mosaicplot(x, ...) # tabela danych
+mosaicplot(formula, data, ...) # formula zależności danych
+		
+Argumenty:
+x - tabela krzyżowa w formie macierzy
+formula - formuła grupująca dane, które chcemy przedstawić na wykresie
+```
+
+Przykłady
+
+```{r, fig.height = 8, fig.width = 12, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+require(stats)
+mosaicplot(Titanic, main = "Survival on the Titanic", color = TRUE)
+```
+
+```{r, fig.height = 6, fig.width = 8, fig.align = "center", echo = TRUE, comment = NA, message=FALSE, warning=FALSE}
+
+require(stats)
+mosaicplot(~ Sex + Age + Survived, data = Titanic, color = TRUE) # formuła dla danych stabelaryzowanych
+```	
+
+***
+***
+### Podstawy programowania
+
+**Pętla FOR**
+
+for (`ZMIENNA` in `SEKWENCJA`){
+`WYKONAJ`
+}
+
+Przykład: 
+```{r, echo = TRUE, comment=NA}
+for (i in 1:4){
+j <- i + 10
+print(j)
+}
+```
+
+**Pętla WHILE**
+
+while (`WARUNEK`){
+`WYKONAJ`
+}
+
+Przykład:
+```{r, echo = TRUE, comment=NA}
+i = 0
+while (i < 5){
+print(i)
+i <- i + 1
+}
+i
+```
+
+**Instrukcja warunkowa IF ... ELSE ...**
+
+if (`WARUNEK`){
+`WYKONAJ 1`
+} else {
+`WYKONAJ 2`
+}
+
+Przykład:
+```{r, fig.height = 5, fig.width = 8, fig.align = "center", echo = TRUE, comment=NA}
+a <- c(2,4,7,1,1,3,5)
+
+if (i > 3){
+print("Yes")
+} else {
+print("No")
+}
+
+for (i in a){
+if (i > 3){
+print("Yes")
+} else {
+print("No")
+}}
+
+liczba <- 1233
+if (liczba %% 2 == 0) {
+  cat("liczba parzysta")
+} else {
+  cat("liczba nieparzysta")
+}
+
+# Zagnieżdżenie funkcji
+
+a <- c(6,8,12,7,3)
+b <- c(11,4,7,9,7)
+c <- c(6,9,67,8,9)
+d <- data.frame(a,b,c)
+
+for (i in 1:length(d)){
+print(mean(d[,i]))
+i <- i + 1}
+
+par(mfrow = c(1,3))
+for (i in 1:length(d)){
+plot(d[,i])
+i <- i + 1}
+```
+
+Do policznia średniej, czy też zastosowania innej funkcji na kolumnach lub wierszach ramki danych można wykorzystać wcześniej opisana funkcję `apply`
+
+```{r, echo = TRUE, comment=NA}
+apply(d,2,mean)
+```
+
+**Funkcje**
+
+nazwa_funkcji <- function(`ZMIENNA`){
+`WYKONAJ`
+return(`NOWA_ZMIENNA`)
+}
+
+Przykład:
+```{r, echo = TRUE, comment=NA}
+square <- function(x){
+squared <- x*x
+return(squared)
+}
+square(5)
+square(c(2,3,8))
+```
+
+
+```{r bib, include=FALSE}
+# KEEP THIS AT THE END OF THE DOCUMENT TO GENERATE A LOCAL bib FILE FOR PKGS USED
+knitr::write_bib(sub("^package:", "", grep("package", search(), value=TRUE)), file='skeletonPP.bib')
+```
