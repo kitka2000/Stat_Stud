@@ -25,9 +25,9 @@ Wykresy gotowe do publikacji, wykorzystujące możliwości *ggplot2*, jednocześ
 ### Podstawowy wykres pudełkowy (ang: boxplot)
 
 ```{r, message=F, warning=F}
-# if(!require(devtools)) install.packages("ggpubr")
-# if(!require(devtools)) install.packages("devtools")
-# devtools::install_github("kassambara/ggpubr")
+if(!require(devtools)) install.packages("ggpubr")
+if(!require(devtools)) install.packages("devtools")
+devtools::install_github("kassambara/ggpubr")
 
 library(ggpubr)
 
@@ -240,7 +240,7 @@ p + theme_void()
 
 ```
 
-### Usuwanie komponentóW wykresu - funkcja **rremove()**
+### Usuwanie komponentów wykresu - funkcja **rremove()**
 
 Użycie: rremove(object)
 

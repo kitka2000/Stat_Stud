@@ -1,0 +1,93 @@
+---
+title: "Restoration of images: exercices"
+---
+
+---
+
+</br>
+
+Restore the following images using the ICM and the simulated annealing algorithms.
+
+
+# Image 1
+
+```{r, fig.height=6, fig.width=6}
+n <- 12
+m <- 10
+foo <- matrix(c(1,2,3,2,3,1,3,1,2), nrow=3)
+temp <- matrix(1,nrow=n/3,ncol=n/3) %x% foo
+X.ori <- temp %x% matrix(1,nrow=m,ncol=m)
+
+image(X.ori, axes=FALSE, frame.plot=FALSE)
+```
+
+```{r, fig.height=6, fig.width=6}
+p <- 0.1
+N <- dim(X.ori)[1]
+Y <- X.ori
+Y1 <- Y[2:(N-1),2:(N-1)]
+i1 <- which(runif(((N-2)^2)) < p)
+Y1[i1] <- 1
+i2 <- which(runif(((N-2)^2)) < p)
+Y1[i2] <- 2
+i3 <- which(runif(((N-2)^2)) < p)
+Y1[i3] <- 3
+Y[2:(N-1),2:(N-1)] <- Y1
+
+image(Y, axes=FALSE, frame.plot=FALSE)
+```
+
+
+</br> </br>
+
+# Image 2
+
+```{r, fig.height=6, fig.width=6}
+n <- 10
+m <- 10
+temp <- matrix(1,nrow=n/2,ncol=n/2) %x% diag(2)
+X.ori <- temp %x% matrix(1,nrow=m,ncol=m) +1
+
+image(X.ori, axes=FALSE, frame.plot=FALSE)
+```
+
+```{r, fig.height=6, fig.width=6}
+N <- dim(X.ori)[1]
+Y <- X.ori
+Y[2:(N-1),2:(N-1)] <- Y[2:(N-1),2:(N-1)] + matrix(rnorm((N-2)^2)*0.7,ncol=N-2)
+
+image(Y, axes=FALSE, frame.plot=FALSE)
+```
+
+</br> </br>
+
+# Image 3
+
+```{r, fig.height=6, fig.width=6}
+n <- 100
+m <- 10
+foo <- rep(rep(c(1,2),m/2),each=n/m)
+X.ori <- matrix(1,nrow=n,ncol=n)
+for (k in (1:n)) {
+  X.ori[k,] <- foo
+  foo <- c(foo[n], foo[1:(n-1)])
+  }
+
+image(X.ori, axes=FALSE, frame.plot=FALSE)
+```
+
+```{r, fig.height=6, fig.width=6}
+p <- 0.15
+N <- dim(X.ori)[1]
+Y <- X.ori
+Y1 <- Y[2:(N-1),2:(N-1)]
+i1 <- which(runif(((N-2)^2)) < p)
+Y1[i1] <- 3-Y1[i1]
+Y[2:(N-1),2:(N-1)] <- Y1
+
+image(Y, axes=FALSE, frame.plot=FALSE)
+```
+
+
+
+

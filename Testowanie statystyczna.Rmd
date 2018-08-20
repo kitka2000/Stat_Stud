@@ -1,0 +1,500 @@
+---
+title: "Testowanie statystyczne"
+author: "dr Magdalena Guzowska"
+og:
+  html_document: 
+    highlight: kate
+  title: "opengraph title"
+  url: "optional opengraph url"
+  image: "optional opengraph image link"
+footer:
+  - content: '"Statystyka i R w biologii. Warsztaty dla doktorantów."'
+  - content: 'Prowadząca: dr Magdalena Guzowska, SGGW 2018'
+date: "`r Sys.Date()`"
+output: markdowntemplates::skeleton
+---
+
+### Hipoteza statystyczna. Błędy weryfikacji. Moc testu.
+
+##### *Hipoteza statystyczna, to sąd na temat populacji wydany bez przeprowadzenia szczegółowego badania - weryfikacji. W przypadku **ESTYMACJI** wychodzimy od wyników próby i na ich podstawie formułujemy wnioski. Przy **TESTOWANIU HIPOTEZ STATYSTYCZNYCH** najpierw wysuwamy przypuszczenia dotyczące populacji generalnej, a potem sprawdzamy je na podstawie próby. *
+
+Hipotezę H~0~ weryfikujemy porównując wyniki próby z treścią hipotezy, wykorzystując **testy statystyczne**. Decyzja podjęta na podstawie próby nie zawsze jest bezbłędna. Możemy popełnić 2 rodzaje błędów:
+
+* BŁĄD I RODZAJU (błąd odrzucenia) - odrzucenie prawdziwej H~0~
+* BŁĄD II RODZAJU (błąd przyjęcia) - nieodrzucenie fałszywej H~0~
+
+Rozmiary tych błędów, to pewne prawdopodobieństwo, którego nie jesteśmy w stanie jednocześnie zminimalizować. Konieczne jest osiągnięcie kompromisu. Najczęściej wybiera się testy najmocniesze, które przy ustalonym prawdopodobieństwie błędu I rodzaju, minimalizują prawdopodobieństwo błędu II rodzaju.
+Testy, w których bierzemy pod uwagę tylko błąd I rodzaju i pomijamy błędy II rodzaju to **testy istotności**. Ponieważ nie mamy informacji o poziomie błędu II rodzaju nie możemy mówić o przyjęciu H~0~, a jedynie o braku podstaw do jej odrzucenia.
+
+**PRZYKŁAD**
+
+Średnia waga pudełka płatków śniadaniowych powinna wynosić 368 g. Podczas okresowej kontroli pobrano 25 pudełek. Odchylenie standardowe wagi wyniosło 15 g (stąd wariancja 225). Jaka średnia waga próby przy $\alpha = 0,05$, będzie wskazywać, że należy odrzucić H~0~? Korzystamy ze zmiennej losowej Z zależnej od $\mu$, $\bar{x}$, $\sigma$ oraz n, która przy prawdziwości H~0~ ma rozkład *N*(0,1):
+
+$Z = \frac{\bar{X}-\mu}{\sigma}*\sqrt{n}$
+
+H~0~ odrzucimy, gdy średnia z grupy k, będzie zbyt mała:
+
+$P_{H_0}$ $(\bar{X} < k)$ = $P_{H_0}$ $(\frac{\bar{X}-\mu}{\sigma}*\sqrt{n} < \frac{k-\mu}{\sigma}*\sqrt{n})$ = $P_{H_0}$ $(Z < \frac{k-\mu}{\sigma}*\sqrt{n}) = \alpha$
+
+Zatem obszar krytyczny $\Phi$:
+
+$\Phi(\frac{k-\mu}{\sigma}*\sqrt{n}) = \alpha$
+
+$\frac{k-\mu}{\sigma}*\sqrt{n} = u_{\alpha}$
+
+$k = \mu + \frac{\sigma*u_{\alpha}}{\sqrt{n}}$ = 368 - $\frac{15*1,645}{\sqrt{25}}$ = 363,065
+
+H~0~ należałoby odrzucić, gdy 25-elementowa próba miałaby masę mniejszą niż 363,065.
+
+```{r,fig.height = 5, fig.width = 5, fig.align = "center", echo = FALSE, comment = NA, message=FALSE, warning=FALSE}
+library("BSDA")
+par(ps=11)
+normarea(qnorm(0.05, 368, 3), Inf, 368, 3)
+```
+: Rys.1 Rozkład badanej zmiennej o rozkładzie normalnym *N*(368, 3) wraz z wartością krytyczną i zaznaczonym na biało obszarem krytycznym, przy $\alpha = 0,05$
+
+Prawdopodobieństwo błędu II rodzaju, zależeć będzie od średniej wartości wagi pudełka płatków z pobranej próby. Załóżmy, że wynosi 360 g.
+
+$\beta = 1 - P_{H_1} (\bar{X} < k) = 1 - P_{H_1} (Z < \frac{363,065 - 360}{15}*{\sqrt{25}}) = 1 - \Phi(1,02) = 1 - 0,847 = 0,153$
+
+Zatem prawdopodobieństwo popełnienia błędu II rodzaju wynosi 0,153, a moc testu 0,847. Można policzyć, że moc testu przy różnych średnich będzie zmieniać się w następujący sposób:
+dla $\mu_1$ = 352 wynosi 0,999; $\mu_1$ = 360 wynosi 0,847; a dla $\mu_1$ = 367 już tylko 0,095.
+**Moc testu spada wraz ze wzrostem trudności podjęcia decyzji.**
+
+```{r,fig.height = 5, fig.width = 10, fig.align = "center", echo = FALSE, comment = NA, message=FALSE, warning=FALSE}
+library("BSDA")
+par(mfrow=c(1,3), cex.axis = 1.8, ps = 7.8)
+normarea(qnorm(0.999, 368, 3), lower = -Inf, 368, 3)
+normarea(qnorm(0.847, 368, 3), lower = -Inf, 368, 3)
+normarea(qnorm(0.095, 368, 3), lower = -Inf, 368, 3)
+```
+: Rys.2 Zależność mocy restu od prawdopodobieństwa popełnienienia błędu II rodzaju. Moc testu maleje wraz ze wzrostem tego prawdopodobieństwa - wzrostem trudności podjęcia prawidłowej decyzji. 
+
+Ponieważ moc testu jest zawsze większa dla hipotez 1-stronnych, należy, w miarę możliwości, stosować takie podejście.
+
+##### *Użytecznym pojęciem w przypadku testów statystycznych jest tzw. p-wartość (ang: p-value), która oznacza najmniejszy poziom istotności, przy którym zaobserwowana wartość statystyki testowej prowadzi do odrzucenia H~0~. Dzięki zastosowaniu p-wartości nie ma potrzeby szacowania a priori poziomu istotności. Dopiero po wykonaniu testu, sprawdza się dla jakiego poziomu istotności uzyskana statystyka jest wartością krytyczną. **p-wartość nie jest poziomem istotności testu, gdyż jest zmienną losową**. *
+
+### Moc testu a ocena wielkości próby
+
+Często badania pzreprowadza się ustalając poziom istotności i intuicyjnie dobierając wielkość próby. Prawidłowym podejściem jest **ustalenie wielkości efektu**, który chcemy wykrywać, oraz określenie poziomu istotności. Na ich podstawie dokonywany jest **dobór wielkości próby**, tak aby zachowany był odpowiedni **poziom mocy testu**. Moc powinna wynosić **co najmniej 0,8**.
+
+W R dostępne są 3 funkcje służące analizie mocy testu `power.t.test`, `power.prop.test` oraz `power.anova.test`, służące odpowiednio do analizy mocy testu *t*, testu dla 2 wskaźników struktury oraz w ANOVA.
+
+**PRZYKŁAD**
+
+Zastosujemy funkcję `power.t.test` do określenia, jak dużą próbę musimy pobrać, aby móć wykrywać efekt na poziomie 10% różnic średnich. 
+Funkcja ta ma 4 główne parametry: **n** - liczba obserwacji w każdej z grup, **delta** - różnica średnich, jaką chcemy wykrywać, **sd** - odchylenie standardowe próbki, oraz **power** - akceptowalna moc testu.
+Przed analizą musimy znać poziom wariancji - oszacowany na podstawie badań wstępnych, albo wyników poprzedników.
+Nasza średnia wynosi 20, odchylenie standardowe 3,5, akceptowalna moc 0,8. Jeżeli chcemy wykrywać 10% różnicę, to delta wyniesie 2 (10% * 20).
+
+```{r,echo =TRUE, comment = NA}
+power.t.test(delta = 2, sd = 3.5, power = 0.8)
+```
+**Odp:** Zatem potrzbujemy po 50 powtórzeń/ osobników na każdą porównywaną grupę.
+
+Jeżeli mamy po 30 obserwacji w każdej grupie, to jaki efekt jesteśmy w stanie wykryć?
+
+```{r, echo =TRUE, comment = NA}
+power.t.test(n = 30, sd = 3.5, power = 0.8)
+```
+**Odp:** **delta** 2,574701 po podzieleniu przez 20 (średnią) daje wynik ~ 13 % (taki efekt powinniśmy być w stanie wykryć).
+
+Jaką moc testu uzyskamy przy 100 obserwacjac w każdej grupie?
+
+```{r, echo =TRUE, comment = NA}
+power.t.test(n = 100, delta = 2, sd = 3.5)
+
+```
+
+**Odp:** Uzyskamy moc testu na poziomie 98,03 %.
+
+W pakiecie `pwr` dostępne są dodatkowe funkcje do analizy mocy testów np. testu
+$\chi^2$, testu *z*, testu jednego wskaźnika struktury.
+
+### Istotność wyników testów statystycznych - wiarygodność *p*-wartości oraz poprawki na wielokrotne testowanie.
+
+##### Nastepujące stwierdzenia - **zasady interpretacji *p*-wartości** - odnoszą się do błędnego wykorzystywania lub interpretacji tej wartości:
+
+**1. *p*-wartość może wskazywać jak niezgodne z zastosowanym modelem są dane.**
+
+**2. *p*-wartość nie oznacza prawdopodobieństwa jak prawdziwa jest badana hipoteza,   ani z jakim prawdopodobieństwem różnice powstały przypadkowo.** 
+
+**3. przekroczenie *p*-wartości nie powinno być jedynym i ostatycznym wskaźnikiem   do podejmowania decyzji, czy wyciągania wniosków.**
+
+**4. prawidłowo przeprowadzona analiza statystyczna wymaga przejrzystości stosowanych techniki, dostarczenia obszernego raportu i najlepiej udostępnienia danych surowych.**
+
+**5. ani *p*-wartość, ani istotność statystyczna nie mierzą rozmiaru efektu ani nie określają znaczenia wyników.**
+
+**6. *p*-wartość, zastosowana jako wyłączna miara, nie jest wystarczającą miarą do oceny modelu, czy hipotezy.**  
+
+**PRZYKŁAD**
+
+Zaobserwowano wpływ diety na masę szczurów: po 13 tygodniach masa szczurów karmionych paszą GMO była średnie 15 g niższa niż w grupie kontrolnej. Jest bardzo mało prawdopodobne (pomimo zauważalnej różnicy), aby taki efekt wykazać statystycznie dysponując 2 grupami szczurów po 10 sztuk każda.
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+# Generowanie danych rozkładu normalnego
+n <- 10 # liczebność
+mu <- 500 # średnia masa
+delta <- 15 # obserwowany efekt
+sd <- 30 # odchylenie standardowe
+x.sim <- rnorm(n,mu,sd)
+y.sim <- x.sim + delta
+# porównujemy grupy testem t
+t.test(x.sim, y.sim)
+```
+
+Jest to dowód na to, że biologicznie istotna różnica może być nieistotna statystycznie. Z drugiej strony możliwe jest, że różnica nieistotna biologicznie (zmiana na poziomie 1 g) okaże się istotna staystycznie.
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+# Generowanie danych rozkładu normalnego
+n2 <- 10000 # liczebność
+delta2 <- 1 # obserwowany efekt
+x.sim2 <- rnorm(n2,mu,sd)
+y.sim2 <- x.sim2 + delta2
+# porównujemy grupy testem t
+t.test(x.sim2, y.sim2)
+```
+
+Test na podstawie, którego mamy wyciągnąć wnioski, musi mieć wystarczającą moc. W innym przypadku ponosimy ryzyko, że nasze wnioskowanie będzie błędne. 
+
+Tradycyjne metody statystyczne opierają sie na porównaniu różnic pomiędzy średnimi badanych grup. Takie podejście ma nastepujące wady: 
+
+1. Ocena czy 2 średnie są identyczne zwykle jest mało interesująca. Małe różnice między średnimi mogą występować nawet, jeśli nie są biologicznie, czy w inny sposób, istotne. W takiej sytuacji lepsza byłaby ocena, czy istnieje jakaś istotna różnica np. czy obserwowana różnica ma istotny wpływ na badane grupy.
+2. W podejściu tradycyjnym H~0~ zakłada brak różnic między średnimi. Dostarczone danye maja umożliwić atwierdzenie, że jest inaczej. W sytuacji, kiedy nie ma wystarczającej ilości danych, możemy nie dać rady udowodnić statystycznie istotnej różnicy (ze względu na niewystarczającą moc testu). Zakładając w H~0~, że różnica istnieje, odwracamy sytuację, więc dostarczone dane muszą umożliwić stwierdzenie, że tej różnicy nie ma.
+
+Ciekawym rozwiązaniem są **testy równoważności** (*ang. equivalence tests*) pozwalające na lepszą ocenę uzyskanych danych.
+Testy równoważności wyznaczają przedział, w którym średnie można uznać za równoważne - nie oznacza to, że średnie są równe, ale że są wystarczająco podobne. Wyznacza się specyficzną dla badanego problemu wartość $\delta$ (delta). Jeśli wartość bezwzględna różnicy średnich, jest niższa od tej wartości, to średnie uznaje się za równoważne.
+Testujemy hipotezę H~0~:
+
+$H_0: |\mu_x - \mu_y| \geq \delta$   vs.   $H_1: |\mu_x - \mu_y| < \delta$
+
+Testy równoważności mają swoje źródło w testach biorównoważności stosowanych w farmakologii (przy wprowadzaniu nowych leków na rynek) i w produkcji rolnej (w badaniu bezpieczeństwa nowych odmian np. modyfikowanych genetycznie).
+
+##### Porównywanie 2 prób - procedura TOST (*ang. two one-sided test*)
+
+Najprostszym i najczęstszym podejściem jest procedura TOST, gdzie testujemy równoważność 2 prób. Oznaczamy róznice średnic 2 prób jako $\mu_d$ ($\mu_d = \mu_x - \mu_y$), i przeprowadzamy 2 testy:
+
+$H_0^{(+)} : \mu_d \geq \delta$  vs. $H_1^{(+)} : \mu_d < \delta$ 
+
+$H_0^{(-)} : \mu_d \leq -\delta$  vs. $H_1^{(-)} : \mu_d > -\delta$
+
+co odpowiada testom o następująco postawionych hipotezach:
+
+$H_0^{(+)} : \mu_d = \delta$  vs. $H_1^{(+)} : \mu_d < \delta$
+
+$H_0^{(-)} : \mu_d = -\delta$  vs. $H_1^{(-)} : \mu_d > -\delta$
+
+Dwie próby uznaje się za równoważne (przy ustalonym poziomie istotności $\alpha$) wtedy, kiedy **przedział ufności (1-2$\alpha$) * 100% dla różnicy $\mu_x - \mu_y$, zawiera się w przedziale ($-\delta, \delta$)**. 
+
+Odrzucamy obie hipotezy: $H_0^{(+)}$ i $H_0^{(-)}$ postulujące o nierówności średnich, wtedy gdy przedził ufności dla $\mu_d$ mieści się w przedziale ($-\delta, \delta$).
+
+**PRZYKŁAD**
+
+Korzystamy z danych Monsnato, dotyczących wpływu paszy zawierającej GMO na masę szczurów obu płci. Oceniamy masę samców karmionych i nie karmionych GMO po 14 tyg.
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+
+masa.szcz <- read.csv("ratWeight.csv")
+data <- subset(masa.szcz, week==14)
+head(data)
+x <- data[data$gender=="Male" & data$regime=="Control","weight"]
+y <- data[data$gender=="Male" & data$regime=="GMO","weight"]
+dmean <- data.frame(x=c(mean(x),mean(y)),dieta=c("kontrola","GMO"))
+dmean
+nx <- length(x)
+ny <- length(y)
+x.mean <- mean(x)
+y.mean <- mean(y)
+alpha <- 0.05
+
+x.sc <- sum((x-x.mean)^2)
+y.sc <- sum((y-y.mean)^2)
+cx <- x.sc/(nx-1)/nx
+cy <- y.sc/(ny-1)/ny
+dfw <- (cx + cy)^2 / (cx^2/(nx-1) + cy^2/(ny-1)) # Welch Two Sample t-test dla nierównych wariancji
+```
+
+Zakładamy nierówne wariancje 2 prób (korzystamy z testu t Welch'a dla nierównych wariancji) i obliczmy 90% przedział ufności dla $\mu_d = \mu_x - \mu_y$
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+d.mean <- x.mean-y.mean
+s.d.mean <- sqrt(var(x)/length(x) + var(y)/length(y))
+d.mean + s.d.mean*qt(c(alpha,1-alpha),dfw)
+
+```
+
+Jeżeli założymy, że różnica w masie ciała wynosząca 20 g jest istotna biologicznie, to $\delta = 20$ i 90% przedział ufności nie mmieści się w zakresie wartości ($-\delta,\delta$). Zatem nie możemy odrzucić H~0~ i uznać równoważności średnich. W przypadku jednak, gdy różnica istotna biologicznie wynosiłaby 40 g ($\delta = 40$), przedział ufności mieściłby się w zakresie (-40,40)
+
+Przedstawiając powyższe wyniki za pomocą *p*-wartości otrzymujemy:
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+delta20 = 20
+pt((d.mean-delta20)/s.d.mean, dfw) + 1 - pt((d.mean+delta20)/s.d.mean, dfw)
+```
+oraz
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+delta40 = 40
+pt((d.mean-delta40)/s.d.mean, dfw) + 1 - pt((d.mean+delta40)/s.d.mean, dfw)
+```
+
+Wszystkie te obliczenia możemy zastąpć wykorzystując funkcję `tost`, w której warość $\delta$ podawana jest jako opcja `epsilon`
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+library(equivalence)
+tost(x, y, alpha=0.05, epsilon=20)
+```
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+tost(x, y, alpha=0.05, epsilon=40)
+```
+
+***
+
+W testowaniu statystycznym odrzucenie H~0~, może nastąpić przypadkowo (w każdym teście zakładamy np. 5% szans na popełnienia błędu I rodzaju). Przeprowadzenie wielu testów statystycznych zwiększa jeszcze szansę na popełnienie błędów we wnioskowaniu. Zakłada się, że poziom istotności całej procedury testowej wzrasta wraz z liczbą wykonywanych testów (k) zgodnie ze wzorem:
+
+$\alpha = 1 - (1 - \alpha^*)$,
+
+gdzie: 
+$\alpha$ - poziom istotności procedury testowej;
+$\alpha^*$ - poziom istotności testów składowych;
+k - liczba testów
+
+```{r,fig.height = 5, fig.width = 5, fig.align = "center", echo = FALSE, comment = NA, message=FALSE, warning=FALSE}
+k=c(1:20)
+p = 1-(1-0.05)^k
+pt = 1-p
+plot(k,p, type = "l", xlim = c(1,20), ylim = c(0,1), las = 1, lwd = 2, xlab = "Liczba testów (*k*)", cex.lab=0.9, cex.axis = 0.9)
+lines(k,pt, type = "l", lty = 2, xlim = c(1,20), ylim = c(0,1), lwd = 1.5)
+abline(h = 0.95, untf = FALSE, lty = 3)
+abline(h = 0.05, untf = FALSE, lty = 3)
+```
+
+: Rys.3 Poziom istotności testu oraz prawdopodobieństwo poprawnej decyzji przy zwiększaniu liczby hipotez $\alpha^* = 0,05$
+
+W przypadku testowania zbioru hipotez możliwe jest odrzucenie prawdziwej hipotezy zerowej (V) oraz odrzucenie fałszywych hipotez zerowych (S). R, to suma obu ww. przypadków. Obecnie wymagane jest stosowanie poprawki na wielokrotne testowanie, najczęściej poprzez kontrolę jednego z 2 najpopularniejszych współczynników błędów:
+
+**FWER = P(V $\ge$ 1)**, (FWER, *ang. Familywise error rate*), czyli prawdopodobieństwo, że procedura chociaż raz błędnie odrzuci H~0~
+
+**FDR = E(Q)**, gdzie Q = 0, gdy R = 0 i Q = V/R gdy R > 0, (FDR, *ang. False Discovery Rate*), prawdopodobieństwo popełnienia akceptowalnego odsetka błędów (jest to metoda mniej konserwatywna niż FWER)
+
+**PRZYKŁAD 1**
+
+Wykonujemy 6 niezależnych testów *t*-Studenta, z których każdy uzyskuje statystycznie istotną wartość p. Zastosujemy korekty Bonferroniego (wykorzystywana w przypadku kontroli FWER) i Benjaminiego-Hochberga (wykorzystywana w przypadku kontroli FDR)
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+library("tibble")
+set.seed(1234)
+pwart = numeric(6)
+for (i in 1:6)
+  pwart[i] = t.test(rnorm(20), rnorm(20,1))$p.value
+Bonferroni <- p.adjust(pwart, method=c("bonferroni"))
+BH <- p.adjust(pwart, method=c("BH"))
+p_surowe <- pwart
+p_corr <- tibble(p_surowe,Bonferroni,BH)
+p_corr
+```
+
+Stosując konserwatywną poprawkę Bonferroniego odrzucilibyśmy H~0~ w 4 z 6 przypadkach ($\alpha$ = 0,1) lub 2 z 6 ($\alpha$ = 0,5). Natomiast zastosowanie poprawki Benjaminiego-Hochberga pozwala na odrzucenie wszystkich H~0~ (gdy $\alpha$ = 0,1) i 5 z 6 (gdy $\alpha$ = 0,05).
+
+**PRZYKŁAD 2**
+
+Dane dotyczą zależności pomiędzy dietą a wynikami mammografii. zgęstnienia na obrazie są silnie skolerowane z ryzykiem rozwinięcia raka piersi. Dane pochodzą z 2014 i zostały opublikowane przez García-Arenzana et al. Opisują potencjalny wpływ 25 czynników związanych z dietą na powstawanie zgęstnień na obrazie mammograficznym.
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+mammo <- read.csv("dietary.csv")
+mammo
+```
+
+5 z 25 czynników uzyskały *p*-wartość < 0,05, jednakże ze wzgledu na wielokrotne porównania możemy spodziewać sie, że 1-2 z tych wyników okazały się znaczące czysto przez przypadek ($\alpha = 0,05$). Korekta Bonferroniego wymaga podzielenia zakładanego poziomu istotności $\alpha$ przez liczbę wykonanych testów (k = 25). Nowoobliczona, skorygowana wartość krytyczna to zaledwie 0,002. Uzyskana *p*-wartość musi byćmniejsza niż skorygowana wartośc krytyczna, by można było nazwać ją znaczącą.
+
+Alternatywne podejście FDR, zwiększa moc testu, jednocześnie pozwalając na pewien poziom błędnych decyzji (*ang. false discovery*).
+
+> Mniej konserwatywne podejście jest szczególnie istotne w wielkoskalowych eksperymentach biologicznych. Jeżeli planujemy porównać ekspresję 20000 genów pomiędzy w prawdidłowych komórkach wątroby i komórkach nowotworowych, wykonujemy jednocześnie kilkadziesiąt tysiecy pojedynczych testów statystycznych. Planujemy wykonać kolejne eksperymenty na grupie genów o istotnie zróżnicowanej ekspresji i nie chcemy ich pominąć. W takiej sytuacji lepiej jest przyzwolić na wysokie prawdopodobieństwo wyników fałszywie pozytywnych np. 25 %. Fałszywie pozytywne wyniki, będziemy mogli odrzucić w kolejnych eksperymentach. Zatem ustalamy FDR na 25 %.
+
+Zastosujemy poprawkę Benjaminiego-Hochberga, która wyliczy skorygowane *p*-wartości
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+p.bh <- mammo$p.value
+m <- length(p.bh)
+for (i in ((m-1):1))
+p.bh[i] <- min(mammo$p.value[i]*m/i , p.bh[i+1])
+mammo$p.bh <- p.bh
+mammo
+```
+
+Takie same skorygowane wartości otzrymamy dzięki funkcji `p.adjust`
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+p.adjust(mammo$p.value, method = "BH")
+```
+
+Zakładając $\alpha$ = 0,25, przyzwalamy na 25% fałszywie pozytywnych wyników wsród 5 testów, które wcześniej okazały się statystycznie istotne.
+
+Procedurę Benjaminiego-Hochberga można również ująć inaczej. Porównujemy nieskorygowane *p*-wartości z progiem *P*~BH~, czyli każda z tych wartości niższa lub równa odpowiedniej wartości krytycznej BH ($\alpha * \frac{i}{m}$) (gdzie $\alpha$, to ustalony próg FDR; m, to liczba wykonanych testów; i, to kolejne liczby od 1 do m).
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE}
+alpha <- 0.25
+m <- dim(mammo)[1]
+mammo$critical.value <- (1:m)/m*alpha
+mammo
+```
+
+Dane można przedstawić na wykresie:
+
+```{r, echo = TRUE, comment = NA, messages = FALSE, warning = FALSE}
+library(gridExtra)
+pl1 <- ggplot(mammo) + geom_line(aes(x=1:m,y=p.value), colour="blue") +
+geom_line(aes(x=1:m,y=critical.value), colour="red") +xlab("(i)")
+grid.arrange(pl1,pl1 + xlim(c(1,8)) + ylim(c(0,0.21)) + geom_vline(xintercept=5.5))
+```
+
+Najwyższa wartość *p*-wartości niższa od odpowiadającej jej wartości krytycznej BH, to 0,042 < 0,05, stąd pierwsze 5 testów jest istotnych statystycznie.
+
+
+Możliwe jest dodatkowe zwiększenie mocy testu poprzez korektę wartości krytycznej BH poprzez przemnożenie jej przez iloczyn m~0~/m (gdzie m~0~, to prawdziwe hipotezy zerowe, których liczba jest nieznana). Liczbę m~0~ można oszacować jako liczbę testów dających wynik nieistotny statystycznie.
+
+```{r, echo = TRUE, comment = NA, messages = FALSE, warning = FALSE}
+m0.est <- sum(mammo$p.bh>alpha)
+mammo$crit.valc <- round(mammo$critical.value*m/m0.est,4)
+mammo$p.bhc <- round(mammo$p.bh*m0.est/m,4)
+head(mammo,10)
+
+```
+Po dokonaniu korekty można uznać, że 7 pierwszysch testów jest rzeczywiście istotnych statystycznie.
+
+Źródło danych:
+*García-Arenzana, et al. 2014. Calorie intake, olive oil consumption and mammographic density among Spanish women. International J. of cancer 134: 1916-1925.*
+
+***
+
+### Procedury testowania statystycznego
+
+**Najczęściej zadawane pytania dotyczące danych doświadczalnych, to:**
+
+* czy 2 zmienne są skorelowane?
+* czy więcej niż 2 zmienne sa skorelowane?
+* czy 2 próby doświadczalne różnią się od siebie?
+* czy więcej niż 2 grupy różnią się od siebie?
+* czy zróżnicowanie w obu grupach jest podobne?
+
+**Na te pytanie można odpowiedzieć korzystając z poniższych testów:**
+
+* Test korelacji dla 2 zmiennych
+* Testy korelacji dla więcej niż 2 zmiennych
+* Porównanie średnich 2 grup:
+	+ test *t*-Studenta (parametryczny)
+	+ test rang Wilcoxona (nieparametryczny)
+* porównanie średnich 2 lub wiecej grup
+	+ ANOVA (parametryczny)
+	+ test rang Kruskala-Wallisa (nieparametryczny)
+* porównanie wariancji:
+	+ porównanie wariancji 2 grup: test F (parametryczny)
+	+ porównanie wariancji 2 prób lub większej liczby prób: test Bartlett'a, test Lavene'a (parametryczne), test Flignera-Killeena (nieparametryczny)
+	
+Są oczywiście inne testy i inne sposoby analizowania danych w celu odpowiedzi na powyższe pytania. Poza tym dane mogą wymagać bardziej skomplikowanej analizy, albo inne testy moga okazać się bardziej odpowiednie.
+
+#### Wymagania testów statystycznych (założenia)
+
+Wiele procedur statystycznych m.in. korelacja, regresja, t-test, analiza wariancji wymagają, aby dane cechowały się specyficznym rozkładem, typem, czy liczebnością.
+Często do przeprowadzenia testów staystycznych wymagane jest, aby dane miały rozkład normalny, a wariancje grup były równe. Jeżeli test statystyczny ma takie wymagania, to należy je spełnić, aby uzyskać wiarygodne wyniki.
+Korelacja, test-t i ANOVA sa testami parametrycznymi, zależnymi od dystrybucji danych.
+
+Zanim zastosuje sie testy parametryczne, niezbędne jest sprawdzenie, czy dane spełniaja założenia. W przypadku, gdy założenia nie sa spełnione, należy zastosować testy nieparametryczne.
+
+##### Ocena normalności
+
+W przypadku **wystarczająco licznych prób** (n > 30) brak rozkładu normalego danych nie powinien stanowić dużego problemu (a na pewno nie, gdy n > 100) ze względu na centralne twierdzenie graniczne (CTG). W takiej sytuacji można zaniedbac ograniczenia dla korzystania z testów parametrycznych.Najlepiej jednak (nawet w takich przypadkach) sprawdzić, czy nasze dane maja rozkład normalny np. z zastosowaniem **testu istotności Shapiro-Wilk’a** przyrównującego dystyrybucje danych do rozkładu normalnego, w celu sprawdzenia jak bardzo nasze dane od niego się różnią.
+
+##### Ocena równości wariancji
+
+Zarówno test *t*-Studenta (porównującego 2 niezależne próby) jak i ANOVA (porównująca więcej niż 2 próby) zakładają, że próby badane mają róne wariancje. Jeżeli próby mają rozkład normalny, to do sprawdzenia równości wariancji można wykorzystać:
+**test F** - do porównania wariancji 2 prób - lub testy **Bartlett'a** bądź **Lavene'a** - do porównania wariancji więcej niż 2 prób.
+
+***
+
+### Wstępne testy statystyczne - ocena dystrybucji danych
+
+Dystrybucję danych można ocenic zarówno wizualnie (na podstawie odpowiednich wykresów), jak i po wykonaniu przeznaczonych do tego testów statystycznych.
+
+Skorzystamy z wbudowanych danych `'ToothGrowth'`
+
+```{r, echo = TRUE, comment = NA, message = FALSE, warnings = FALSE} 
+
+# Instalowanie wymaganych pakietów 'dplyr' i 'ggpubr'
+# install.packages("dplyr") - jeżeli pakiet nie jest do tej pory zainstalowany należy użyć tej komendy
+# warunkiem jest dostęp do internetu.
+# if(!require(devtools)) install.packages("devtools") - niezbędny do instalacji z GitHub
+# devtools::install_github("kassambara/ggpubr") - instalacja bezpośrednio z GitHub
+# install.packages("ggpubr") - instalacja z CRAN
+
+library("dplyr")
+library("ggpubr")
+	
+# my_data <- read.delim(file.choose()) 
+# Instalowanie plików tekstowych (.txt) o danych rozdzielanych tabulatorami
+# my_data <- read.csv(file.choose()) 
+# Instalowanie plików tekstowych (.csv) o danych rozdzielanych przecinkami
+
+dane <- ToothGrowth # tworzymy ramkę danych 'dane'
+
+head(dane) # Funkcja R pokazująca (standardowo) górnych 5 rzędów danych
+# funkcja tail() pokazuje ostatnie 5
+
+# 'sample_n()' z pakietu 'dplyr' 
+# w połączeniu z funkcją 'set.seed' wypisze n (tu: n = 10) losowych rzędów
+
+set.seed(1234)
+dplyr::sample_n(dane, 10) 
+
+```
+
+##### Ocena normalności dystrybucji danych
+
+Chcemy wiedzieć czy zmienna 'len' (długość zębów) ma rozkład normalny. Duża próba (n > 30) powinna na zasadzie CTG mieć rozkład zbliżony do rozkładu normalnego. Jednakże, często zakłada się, że gwarancję daje próba liczniejsz od 100 lub nawet 120. Najlepiej jest, zatem, sprawdzić dystrybucję danych. 
+
+###### Metody wizualne - **wykres gęstości** i **wykres kwantylowy** (*ang. Quantile to Quantile plot; Q-Q plot*)
+
+Wykres gęstości pozwala stwierdzić, czy rozkład danych ma kształt dzwonowy.
+
+```{r, echo = TRUE, fig.height = 4, fig.width = 6, fig.align = "center", comment = NA, message = FALSE, warnings = FALSE}
+library("ggpubr")
+ggdensity(dane$len, 
+          main = "Wykres gęstości długości zębów",
+          xlab = "Długość zębów")
+```
+
+Wykres kwantylowy obrazuje korelację pomiędzy próbą doświadczalną a warściami rozkładu normalnego.
+
+```{r, echo = TRUE, fig.height = 4, fig.width = 6, fig.align = "center", comment = NA, message = FALSE, warnings = FALSE}
+ggqqplot(dane$len)
+```
+
+Jeśli wszystkie punkty układają się wzdłuż linii referencyjnej, możemy założyć normalność dystrybucji próby.
+
+Podobny wynik uzyskamy korzystając z funkcji `qqPlot()` znajdującej się w pakiecie `'car'`
+
+```{r, echo = TRUE, fig.height = 4, fig.width = 6, fig.align = "center", comment = NA, message = FALSE, warnings = FALSE}
+library("car")
+qqPlot(dane$len)
+```
+
+##### Testy istotności
+
+Zwykle nie można polegać jedynie na inspekcji wizualnej (może mieć głównie zanzczenie pomocnicze). Bardziej wiarygodne wyniki na temat dystrybucji próby dadzą testy istotności, porównujęce rozkład badanej próby do rozkładu normalnego. Nejczęściej wykorzstywane są **test normalności Kolmogorov-Smirnov'a (K-S)** i **test Shapiro-Wilk’a**. Hipotezą zerową (H~0~) dla tych testów jest założenie, że próba ma rozkład normalny. Jeżeli uzyskamy wynik statystyki testowej mieszczący się w obszarze krytycznym (wynik istotny statystycznie) odrzucamy hipotezę o normalności rozkładu. Test Shapiro-Wilk’a ma większą moc od testu K-S i jest rekomendowany do badania rozkładu próby. Testy istotności są zależne od wielkości próby. Zwykle małe próby "zdają" test normalności. Szczególnie w takich przypadkach istotne jest dokananie oceny statystycznej i wizualnej próby.
+
+```{r, echo = TRUE,  comment = NA, message = FALSE, warnings = FALSE}
+shapiro.test(dane$len)
+```
+Na podstawie uzyskanej statystyki (W) i *p-Value*, nie mamy podstaw do odrzucenia H~0~ i możemy uznać, że nasze dane mają rozkład normalny.
+
+***
+
+
+
+
+
+
+```{r bib, include=FALSE}
+# KEEP THIS AT THE END OF THE DOCUMENT TO GENERATE A LOCAL bib FILE FOR PKGS USED
+knitr::write_bib(sub("^package:", "", grep("package", search(), value=TRUE)), file='skeletonTS.bib')
+```

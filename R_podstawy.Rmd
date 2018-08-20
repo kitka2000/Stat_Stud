@@ -1,0 +1,228 @@
+---
+title: "R wstęp"
+author: "dr Magdalena Guzowska"
+date: "11 sierpnia 2018"
+output:
+  ioslides_presentation:
+    highlight: monochrome
+    widescreen: yes
+  slidy_presentation:
+    css: air/css/air.css
+    footer: Biostatystyka dla doktorantów. Wstęp. Warszawa, wrzesień, 2018
+    highlight: monochrome
+  beamer_presentation:
+    highlight: monochrome
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Dlaczego R
+
+1. darmowe środowisko obliczeniowe - **open source**
+2. pracuje na wszystkich platformach - Windows, MAC OSX and Linux
+3. szerokie spektrum analiz statystycznych oraz możliwości graficznego przedstawiania danych
+4. możliwość wielokrotnej i ujednoliconej analizy danych poprzez stosowanie skryptów 
+5. zrzesza wielu użytkowników (nauka i  biznes) - prężne fora !!!
+6. poszerzanie możliwości R dzięki tysiącom dobrze udokumentowanych rozszerzeń - pakietów R (zastosowanie w biologii, ochronie zdrowia, różnych dziedzinach nauki, sektorze finansowym itp.) 
+7. łatwość tworzenia własnych skryptów i pakietów R, służących do rozwiązywania specyficznych problemów
+
+## Kilka zastosowań R
+
+1. szeroki wachlarz klasycznych testów statystycznych np.:
+
+    - t-test Student’a m.in. do porównywania średnich 2 grup
+    - test Wilcoxon'a - nieparametryczna alternatywa testu T
+    - ANOVA - porównanie średnich więcej niż 2 grup
+    - test Chi^2^ porównujący proporcje/ dystrybucje
+    - analiza korelacji (ocena relacji pomiędzy zmiennymi)
+2. tworzenie klasyfikacji grup danych np.:
+    
+    - PCA (ang: principal component analysis)
+    - klastrowanie
+3. wiele typów prostych i skomplikowanych wykresów (ogromne możliwości zmian wygladu i zawartości) np.: wykres pudełkowy, histogram, wykres gęstości, wykres punktowy, wykres liniowy, wykres słupkowy, i wiele innych…
+
+## CRAN, Bioconductor, GitHub
+
+**CRAN** - *Comprehensive R Archive Network* - to źródło dokumentacji oraz pakietów do języka R      
+https://cran.r-project.org/
+
+**Bioconductor** - Bioconductor provides tools for the analysis and comprehension of high-throughput genomic data. 
+https://www.bioconductor.org/
+
+**GitHub** – hostingowy serwis internetowy przeznaczony dla projektów programistycznych wykorzystujących system kontroli wersji Git. Serwis działa od kwietnia 2008 roku.
+https://github.com/
+
+Wszystkie te serwisy są źródłem pakietów rozszerzających możliwości R: **CRAN** - pakiety o różnorodnych zastosowaniach, **Bioconductor** - pakiety o zastosowaniach biologicznych, **Github** wersje pakietów w trakcie budowy. 
+
+## Instalacja i korzystanie z pakietów R
+
+**pakiet R** - rozszerzenie funkcjonalności R o zbiory danych i specyficzne funkcje - cel:odpowiedź na specyficzne pytania 
+
+R w podstawowej wersji - pakiety umożliwiające wykonywanie podstawowych analiz statystycznych i graficznej wizualizacji danych (wykresy) oraz dostarcza podstawowe zestawy danych. 
+
+Możliwość pobrania wielu innych pakietów z ww. serwisów 
+
+Podczas każdej sesji **niezbędne jest załadowanie odpowiedniego pakietu, aby móc z niego korzystać !!!**
+
+## Instalacja i korzystanie z pakietów R
+
+1. Funkcja **install.packages("NAZWA_PAKIETU")** służy do instalacji pakietów z CRAN. 
+Możliwa jest instalacja wielu pakietów jednocześnie: 
+
+>**_install.packages(c("NAZWA_PAKIETU1", "NAZWA_PAKIETU2"))_** 
+
+2. Do instalowania pakietów z Bioconductor'a używa się następującego polecenia: 
+
+>**_source("https://bioconductor.org/biocLite.R"), biocLite("NAZWA_PAKIETU")_**
+
+3. Do instalacji z GitHub, korzysta się z pakietu **"devtools"** (Hadley'a Wickham'a) 
+
+>**_install.packages("devtools"), devtools::install_github("ŚCIEŻKA")_**
+
+## Instalacja i korzystanie z pakietów R
+
+Tworzenie listy zainstalowanych pakietów - **_installed.packages()_**
+
+```{r, echo=TRUE, comment=NA}
+head(installed.packages(), n=2)
+```
+
+> W RStudio lista zainstalowanych pakietów jest widoczna w jednym z paneli
+
+## Instalacja i korzystanie z pakietów R
+
+Pakiety instalowane są w podkatalogu o nazwie library. Funkcja **_.libPaths()_** służy do wypisania ścieżki dostępu
+
+```{r, echo=TRUE, comment=NA}
+.libPaths()
+```
+
+Uruchomione/ załadowane pakiety podczas danej sesji wypisywane są po użyciu funkcji **_search()_**
+
+```{r, echo=TRUE, comment=NA}
+search()
+```
+
+## Instalacja i korzystanie z pakietów R
+
+Najlepiej używać aktualnych wersji pakietów ->  należy je uaktuaniać !!! Służy do tego funkcja: 
+
+>**_update.packages()_**
+
+Możliwe jest uaktualnianie tylko wybranych pakietów umieszczając w nawiasie funkcji ich nazwy np.:
+
+>**_update.packages(oldPkgs = c("readr", "ggplot2"))_**
+
+
+## R i RStudio
+
+1. **R** służy do manipulowania danymi, obliczeń i graficznego przedstawiania danych. 
+
+2. Prosty interface graficzny pozwala na:
+
+    - wprowadzanie i zapisywanie danych, manipulacje i obliczenia
+    - stoswanie wszystkich narzedzi dostarczanych przez pakiety
+    - dobrze rozwinięty język programowania, stosujący warunki, pętle, funkcje itp.
+
+3. **RStudio** wykorzystuje środowisko graficzne komputera w celu ułatwienia współpracy z R i zawiera min.:
+
+    - konsolę do wpisywania kodu
+    - okno danych wprowadzonych z zewnątrz i wyników obliczeń R
+    - okno do podglądu wprowadzonych i uzyskanych danych oraz okno podglądu wykresów
+    - inne okna w formie zakładek np.: pakiety, historia, pomoc
+
+## R i RStudio - porównanie
+
+1. RStudio ma więcej możliwości i zastosowań. Pozwala na bezpośrednią interakcję z kodem R
+
+2. Standardowy interface R i RStudio równie dobrze radzą sobie z podglądem danych, ale nie dają możliwości ich prostej edycji (kopiowanie/wklejanie, ręczne wpisywanie)
+
+3. RStudio sprawdza się lepiej w projektach, w których trzeba bezpośrednio ingerować w kod i podczas pracy ze złożonymi danymi
+    
+## RStudio ustawienia i możliwości
+
+1. Program darmowy !!!
+2. Możliwość dostosowania wyglądu i widocznych paneli **[Opcje]**
+3. Łatwość instalacji pakietów, wyszukiwania pomocy, wyszukiwania dokumentów na komputerze 
+4. Możliwość pracy bez zewnętrznego edytora
+5. Podgląd wszystkich wykonanych podczas sesji wykresów
+6. Podgląd wprowadzonych danych w formie podobnej do arkusza Excel lub klasycznej tabeli
+7. Liczne, funkcjonalne dodatki m.in. Markdown i Git
+8. Developer Tools - narzędzia do tworzenia i sprawdzania własnych funkcji i pakietów
+
+## Pomoc dotycząca funkcji R
+
+Aby przeczytać więcej o danej funkcji używa się komendy **help()** np.: dla funkcji *mean*
+
+>**_help(mean)_**, lub **_?mean_**
+
+Aby zapoznać się z przykładami zastosowań funkcji używa się komendy
+**example(NAZWA FUNKCJI)** np.:
+
+>**_example(mean)_**
+
+Funkcja **apropos()** zwraca listę obiektów zawierających sekwencję liter, której szukamy. Jest to przydatne, kiedy nie znamy nazwy funkcji np.:
+
+```{r, echo=TRUE, comment=NA}
+apropos("med")
+```
+
+
+## Pomoc dotycząca funkcji R
+   
+Inną funkcja do wyszukiwania pomocy jest **help.search()** (lub **??**), która zwraca on-line listę funkcji zawierającą wyszukiwany termin, z krótkim opisem
+
+```{r, echo=TRUE, comment=NA}
+help.search("mean")
+```
+
+## Dane wbudowane
+
+>**data()** wypisuje wszystkie dostępne dane dostarczone przez R
+
+>**data(mtcars)** - umożliwia korzystanie z danych o nazwie umieszczonej w nawiasie
+
+```{r mtcars, echo = TRUE, comment=NA}
+head(mtcars, 6)
+```
+
+## Dane wbudowane **"mtcars"** 
+
+```{r, echo=TRUE, comment=NA}
+summary(mtcars)
+```
+
+## Dane wbudowane **"mtcars"** 
+
+```{r, echo = TRUE, comment=NA}
+nrow(mtcars)
+ncol(mtcars)
+```
+
+Aby dowiedzieć się więcej o którymkolwiek z pakietów wykorzystuje się komendę **?[*nazwa pakietu*]** np.:
+
+>**_?mtcars_**
+
+## Najczęściej używane wbudowane dane R
+
+1.  **iris** - zestaw danych pomiarów w centymetrach zróżnicowania długości i szerokości płatków 50 kwiatów irysów z 3 różnych gatunków - *Iris setosa*, *I. versicolor* i *I. virginica*.
+2. **ToothGrowth** - zestaw danych przedstawiających wpływ podawania wit. C na wzrost zębów 60 świnek morskich. Każde zwierzę otrzymywało jedną z trzech dawek witaminy C (0.5, 1, lub 2 mg/dzień) jednym z dwóch źródeł - pochodzące z soku pomarańczowego (OC) lub kwasu askorbinowego (VC).
+3. **PlantGrowth** - wyniki eksperymentu mającego na celu porównanie plonów (suchej masy) uprawianych na dwa różne sposoby.
+4. **USArrests** - statystyki dotyczące brutalnych przestępstw w USA z podziałem na stany.
+
+## Instalacja niezbędnego podczas zajęć oprogramowania
+
+Na zajęciach korzystać będziemy z: R i dodatkowych pakietów R, RStudio, Notepad++ (opcjonalnie), Git (opcjonalnie)
+
+1. Dostęp do internetu - możliwe jest pobieranie i instalowanie oprogramowania na bieżąco. 
+
+2. Kolejność instalacji - R, RStudio, pakiety (zgodnie z aktualnym zapotrzebowaniem - na początek konieczne będzie zainstalowanie **"knitr"**)
+
+3. Brak dostępu do internetu - przygotowana wersja instalacyjna zawiera aktualną wersję R, RStudio oraz niezbędnych pakietów. Dodatkowo zawiera też Notpad++ i Git (do jego wykorzystywania niezbędne jest połączenie z internetem)
+
+```{r bib, include=FALSE}
+# KEEP THIS AT THE END OF THE DOCUMENT TO GENERATE A LOCAL bib FILE FOR PKGS USED
+knitr::write_bib(sub("^package:", "", grep("package", search(), value=TRUE)), file='skeletonRP.bib')
+

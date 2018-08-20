@@ -1,0 +1,235 @@
+---
+title: 'Statistical tests: exercices </br><hr>'
+---
+
+---
+
+
+</br>
+
+
+# Gene expression
+
+The dataset <ttt>geHT.csv</ttt> consists of gene expression measurements for
+ten genes under control and treatment conditions, with four replicates each.
+
+1. Test the hypothesis that the mean of the control expression values is 2000.
+
+
+```{r}
+geHTdata <- read.csv("data/geHT.csv")
+control <- c(geHTdata$c1,geHTdata$c2,geHTdata$c3,geHTdata$c4)
+t.test(control, mu=2000)
+```
+
+
+2. Test that there is no difference overall between the treatments and controls for any of the genes (test
+that the whole experiment didn't work or there are no differentially expressed genes)
+
+```{r}
+treatment <- c(geHTdata$t1,geHTdata$t2,geHTdata$t3,geHTdata$t4)
+t.test(control, treatment)
+```
+
+```{r}
+d <- treatment - control
+t.test(d, mu=0)
+t.test(treatment, control, paired = TRUE)
+```
+
+```{r}
+wilcox.test(treatment, control, paired = TRUE)
+```
+
+
+3. Test if the variances for the gene expression are the same under treatment or control conditions
+
+```{r}
+var.test(treatment, control)
+```
+
+
+</br>
+
+
+# Smoking, no smoking
+
+1. There are 88 smokers among a group of 300 people of a same population. Test that the proportion of smokers in this population is less than or equal to 0.25, greater than or equal to 0.25, equal to 0.25. Show that we can use an exact test, or a test relying on an approximation.
+
+
+```{r}
+binom.test(88, 300, 0.25, alternative = "greater")
+binom.test(88, 300, 0.25, alternative = "less")
+binom.test(88, 300, 0.25, alternative = "two.sided")
+```
+```{r}
+prop.test(88, 300, 0.25, alternative = "two.sided", correct=FALSE)
+```
+```{r}
+prop.test(88, 300, 0.25, alternative = "greater", correct=FALSE)
+```
+
+2. There are 90 smokers in another group of 400 people, coming  from another population. Can we conclude that the proportion of smokers are different in these two populations?
+
+```{r}
+count <- matrix(c(88, 90, 212, 310), nrow=2)
+fisher.test(count)
+```
+
+```{r}
+prop.test(c(88, 90), c(300, 400))
+```
+
+</br>
+
+# Epileptic activity
+
+It is frequently assumed that the daily numbers of epilepy seizures are independent Poisson random variables.
+
+1. The daily numbers of epilepy seizures of a given patient are reported in the datafile `epilepsy1.csv`. Use the Poisson dispersion test and the Chi-Square goodness-of-fit test to test if this data follows a Poisson distribution.
+
+
+```{r}
+data <- read.csv("data/seizures.csv")
+head(data)
+seizure <- data$nsz
+n <- nrow(data)
+c(mean(seizure), var(seizure))
+T <- (n-1)*var(seizure)/mean(seizure)
+p <- 2*(1-pchisq(T, n-1))
+print(p)
+```
+
+2. Compare the Type I error rate and the power of these two tests via Monte Carlo simulation.
+
+</br>
+
+</br>
+
+# Alzheimer's disease
+
+
+Dementia is the result of various cerebral disorders, leading to an acquired loss of memory and impaired cognitive ability. The most common forms are Alzheimer's disease and vascular dementia. 
+
+In a study, patients were treated either with Cerebrolysin or Donepezil.
+The datafile `scoreAD.csv` reports the difference of a score obtained by these patients before and after treatment
+(a negative score indicates an improvment).
+
+1. Test if Cerebrolysin and  Donepezil have a beneficial effect on patients.
+
+```{r}
+data <- read.csv("data/scoreAD.csv")
+summary(data)
+y1 <- data$score[data$trt=="Cerebrolysin"]
+y2 <- data$score[data$trt=="Donepezil"]
+t.test(y1, alternative = "less")
+t.test(y2, alternative = "less")
+```   
+
+2. A doctor claims that the score decrease is greater than 2 in average for patients who take Cerebrolysin. What do you think of this hypothesis? What should be the null hypothesis?
+
+
+
+```{r}
+n1 <- length(y1)
+t <- (mean(y1)+2)/sd(y1)*sqrt(n1)
+p_A <- pt(t,n1-1)
+p_B <- 1-p_A
+print(c(p_A, p_B))
+```
+
+
+3. Test if the two drugs can be considered a equivalent, considering that the two drugs are equivalent if the  difference between the effects is *i)*  less than 2 in average, *ii)* less than 4.
+
+```{r}
+library(ggplot2)
+ggplot(data) + geom_boxplot(aes(trt,score))
+```
+
+```{r}
+library(equivalence)
+tost(y1, y2, 2)
+tost(y1, y2, 4)
+```
+
+
+
+</br>
+
+
+# Type 2 diabetes
+
+An investigator is exploring whether the expression levels of genes significantly differ between a
+sample of healthy individuals and a sample of individuals with Type 2 diabetes. He performs a
+separate t-test comparing the two samples for 5,000 different genes, and uses $\alpha = 0.05$ as his cutoff.
+His analysis identifes 411 genes as having different expression levels between the two samples.
+
+1. The investigator reasons that because he carried out his t-tests using a type I error rate of 5%, he should expect about 5% of the 411 genes that he discovered to be type I errors. Is this reasoning correct or incorrect? If it is incorrect, what's wrong with it?
+
+
+2. What is the investigator's false discovery rate?
+
+
+</br>
+
+# Identification of genes 
+
+Breast cancer is the most common malignant disease in Western women. In these patients, it is not the primary tumour, but its metastases at distant sites that are the main cause of death.
+
+Prognostic markers are needed to identify patients who are at the highest risk for developing metastases, which might enable oncologists to begin tailoring treatment strategies to individual patients. Gene-expression signatures of primary breast tumours might be one way to identify the patients who are most likely to develop metastatic cancer.
+
+The datafile `geneMFS.csv` contains the expression level of 11 genes and the metastasis-free survival (the period until metastasis is detected) for 527 patients.
+
+The objective of this study is to identify which genes may be good or poor prognosis for the development of matastasis.
+
+1. Graphically compare the distribution of the gene expressions in the groups of patients with early metastasis (MFS <1000) and late metastasis (MFS>1000).
+
+
+
+```{r}
+data <- read.csv("data/geneMFS.csv")
+head(data)
+library(reshape2)
+dm <- melt(data, id="survival")
+head(dm)
+pl <- ggplot(dm) +geom_boxplot(aes(x=variable, y=value))
+pl + scale_y_log10()
+```
+```{r}
+ggplot(dm) +geom_boxplot(aes(x=variable, y=log(value), color=(survival>1000)))
+```
+
+
+
+2. Compare the gene expression levels in these two groups using a parametric test.
+
+```{r}
+surv.1000 <- data$survival > 1000
+j <- 1
+dj <- data[,j]
+t.test(dj ~ surv.1000)
+```
+```{r}
+p <- vector(length=11)
+for (j in (1:11)) {
+  dj <- log(data[,j])
+  p[j] <- t.test(dj ~ surv.1000)$p.value
+}
+print(sort(p))
+p.adjust(sort(p), method="bonferroni")
+p.adjust(sort(p), method="BH")
+```
+
+```{r}
+p <- vector(length=11)
+for (j in (1:11)) {
+  dj <- data[,j]
+  p[j] <- wilcox.test(dj ~ surv.1000)$p.value
+}
+print(sort(p))
+p.adjust(sort(p), method="bonferroni")
+p.adjust(sort(p), method="BH")
+```
+
+3. Compare these results with those obtained using a non parametric test.
+

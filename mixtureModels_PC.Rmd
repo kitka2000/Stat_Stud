@@ -1,0 +1,45 @@
+---
+title: "Mixture models: exercices"
+---
+
+---
+
+</br>
+</br>
+
+
+# Faithful data
+
+Fit a mixture of two normal distributions to the faithful data
+
+ 1. assuming different proportions, means and variances for the 2 distributions
+
+ 2. assuming same variances 
+ 
+ 3. assuming same means
+ 
+ 4. assuming same proportions
+ 
+</br>
+
+# Epilepsy data
+
+
+ The data <ttt>seizures.csv</ttt> consists of  daily counts of epileptic seizures for 6 patients.
+ 
+ 1. Load and plot the data
+
+
+ 2. Select the id 12 and fit a Poisson distribution to the number of seizures for this patient.
+
+
+  3. Implement and use a EM algorithm for fitting a mixture of 2 Poisson distributions to this data
+  
+  4. Compare the two models
+  
+  5. Do the same analysis with other id's
+
+
+
+
+

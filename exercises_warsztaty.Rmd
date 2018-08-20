@@ -1,0 +1,57 @@
+---
+title: "R Ä‡wiczenia"
+output:
+  html_document:
+    df_print: paged
+---
+
+Dane: mtcars
+
+ćwiczenie 1
+
+Use logical operators to output only those rows of  data  where column  mpg  is between 15 and 20 (excluding 15 and 20).
+
+```{r}
+car <- mtcars
+sel <- car$mpg < 20 & car$mpg > 15
+car_sel <- car[sel,]
+head(car_sel)
+
+car_sel2 <- car[car$mpg < 20 & car$mpg > 15, ]
+head(car_sel2)
+
+```
+
+
+Ćwiczenie 2
+
+Use logical operators to output only those rows of  data  where column  cyl  is equal to 6 and column  am  is not 0.
+
+```{r}
+
+car_sel3 <- car[car$cyl == 6 & car$am != 0, ]
+head(car_sel3)
+
+```
+
+Ćwiczenie 3
+
+Use logical operators to output only those rows of  data  where column  gear  or  carb  has the value 4.
+
+```{r}
+
+car_sel4 <- car[car$gear == 4 | car$carb == 4, ]
+head(car_sel4)
+
+```
+
+Ćwiczenie 4
+
+Use logical operators to output only the even rows of data.
+
+```{r}
+
+car_sel5 <- car[c(F,T),]
+head(car_sel5)
+
+```

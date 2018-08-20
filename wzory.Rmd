@@ -1,0 +1,64 @@
+---
+title: "Weryfikacja hipotez"
+author: "Magda G."
+date: "12 sierpnia 2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Przegląd hipotez parametrycznych
+
+### Hipoteza dotycząca wartości oczekiwanej cechy (H~0~ : *EX* = *EX~0~*)
+
+Cecha o rozkładzie normalnym (H~0~ : $\mu = \mu_0$) - korzystamy z testu  **_t_-Studenta** lub **testu u**. **Test u** wymaga znajomości odchylenia standarsowego w populacji ($\sigma$):
+
+>$u = \frac{\bar{x}-\mu_0}{\sigma}*\sqrt{N}$
+
+gdy nie znamy ($\sigma$) używamy **_t_-Studenta**:
+
+>$t_{emp} = \frac{\bar{x}-\mu_0}{S}*\sqrt{N}$
+
+gdy cecha nie ma rozkładu normalnego, do weryfikacji hipotezy (H~0~ : EX = EX~0~) można używać testu parametrycznego tylko, gdy próba jest liczna (n>100) na mocy twierdzenia granicznego. Używamy **testu u**
+
+>$u = \frac{\bar{x}-EX_0}{\sigma}*\sqrt{N}$
+
+#### Przykład 
+
+Średnia masa ciała 16 wybranych myszy wynosi 56 g z odchyleniem standardowym 4 g. Na poziomie istotności 0,05 zweryfikować hipotezę, że masa ciała myszy jest równa 60 g.
+
+1. (H~0~ : $\mu = 60$)
+2. (H~1~ : $\mu < 60$)
+3. Próba losowa: N = 16; $\bar{x} = 56$; S =4
+4. Korzystamy z testu *t*-Studenta
+
+>$t_{emp} = \frac{56 - 60}{4}*\sqrt{16} = -4$
+
+5. Poziom istotności $\alpha = 0,05$, obszar krytyczny lewostronny (H~1~ : $\mu < 60$)
+6. Z tablic dla rozkładu *t*-Studenta odczytujemy wartość krytyczną dla $2\alpha = 0,1$ i liczby stopni swobody $\nu = 16 - 1 = 15$, która wynosi:
+
+>_t_~0,1;15~ = 1,753
+
+7. Obszar krytyczny ($\omega$) jest przedziałem $(-\infty; -1,753>$
+8. Obliczona wartość znajduje się w obszarze krytycznym, więc odrzucamy H~0~ na rzecz H~1~
+
+### Hipoteza dotycząca wartości oczekiwanych w dwóch populacjach niezależnych (H~0~ : *EX~1~* = *EX~2~*)
+
+
+\[ f(n) =
+  \begin{cases}
+    n/2       & \quad \text{if } n \text{ is even}\\
+    -(n+1)/2  & \quad \text{if } n \text{ is odd}
+  \end{cases}
+\]
+
+\[ \begin{cases} 
+      0 & x\leq 0 \\
+      \frac{100-x}{100} & 0\leq x\leq 100 \\
+      0 & 100\leq x 
+   \end{cases}
+\]

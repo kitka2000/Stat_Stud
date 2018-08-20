@@ -1,0 +1,185 @@
+---
+title: "Mixed effects models: exercices"
+---
+
+---
+
+</br>
+</br>
+
+# Linear mixed effects models
+
+
+## The <ttt>Pastes</ttt> data
+
+1. Check the documentation, the structure and a summary of the
+<ttt>Pastes</ttt> data from the <ttt>lme4</ttt> package. 
+
+
+
+2. Build a model for this data
+
+
+
+3. What is the main cause of the variability of the paste strength?
+
+
+</br>
+
+## The orange data
+
+1. Check the documentation, the structure and a summary of the
+<ttt>Orange</ttt> data. 
+
+
+2. Plot this data
+
+
+3. Fit a linear model to this data
+
+
+4. Fit different linear mixed effect models to this data and compare them
+
+
+5. Compute confidence intervals on the parameters, compute the individual parameters and plot the random effects for the ``best'' model
+
+
+6. Compare the ML and the REML estimates for this model
+
+
+</br>
+
+## The Oats data
+
+1. Check the documentation, the structure and a summary of the
+<ttt>Oats</ttt> data from the <ttt>nlme</ttt> package. 
+
+
+2. Plot the data in such a way as to visualize the effect of the fertilizer-concentration on the yield as well as possible differences between blocks and varieties.
+
+
+3. Fit the Oats data with linear mixed effects model, assuming a linear effect of the fertilizer concentration on the yield.
+
+
+</br>
+
+# Nonlinear mixed effects models
+
+
+Séralini *et al.* published in 2007 the paper "New Analysis of a Rat Feeding Study with a Genetically Modified Maize Reveals Signs of Hepatorenal Toxicity". The authors of the paper pretend that, after the consumption of MON863, rats showed slight but dose-related significant variations in growth.
+
+The objective of this exercise is to highlight the flaws in the methodology used to achieve this result, and show how to properly analyse the data.
+
+We will restrict our study to the male rats of the study fed with 11% of maize (control and GMO)
+
+  1. Load the `ratWeight.csv` data, select the male rats fed with 11% of maize and plot the growth curves of the control and GMO groups.
+
+  2. Fit a Gompertz growth model $f_1(t) = A \exp(-\exp(-b(t-c)))$  to the complete data (males fed with 11% of maize) using a least square approach, with the same parameters for the control and GMO groups.
+
+
+  3. Fit a Gompertz growth model to the complete data (11% male) using a least square approach, with different parameters for the control and GMO groups.
+  
+Hint: write the model as
+$$ y_{ij} = A_{0} e^{-e^{-b_0 (t_{ij}-c_0)}} \one_{{\rm regime}_i={\rm Control}} +
+A_{1} e^{- e^{-b_1 (t_{ij}-c_1)}} \one_{{\rm regime}_i={\rm GMO}} + e_{ij}$$
+
+
+   4. Check out the results of the paper displayed Table 1, for the 11% males.
+
+
+
+   5. Plot the residuals and explain why the results of the paper are wrong.
+
+
+
+   6. We popose to use instead a mixed effects model for testing the effect of the regime on the growth of the 11% male rats. The codes below show how to fit a Gompertz model to the data 
+   
+    - assuming the same population parameters for the two regime groups,
+    - using lognormal distributions for the 3 parameters (setting transform.par=c(1,1,1))
+    - assuming a diagonal covariance matrix $\Omega$ (default)
+   
+   
+Create first the saemixData object
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+library(saemix)
+
+data <- read.csv("data/ratWeight.csv")
+data.male11 <- subset(data, gender=="Male" & dosage=="11%")
+
+saemix.data<-saemixData(name.data=data.male11, 
+                        name.group=c("id"),
+                        name.predictors=c("week"),
+                        name.response=c("weight"))
+```
+
+Implement then the structural model and create the saemixModel object. Initial values for the population parameters should be provided.
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+gompertz.model <- function(psi,id,x) { 
+  t <- x[,1]
+  A<-psi[id,1]
+  b<-psi[id,2]
+  c<-psi[id,3]
+  ypred<- A*exp(-exp(-b*(t-c)))
+  return(ypred)
+}
+
+saemix.gompertz.model0<-saemixModel(model=gompertz.model,
+                          psi0=c(A=500,b=0.2,c=0.2),
+                          transform.par=c(1,1,0))
+```
+
+Run saemix for estimating the population parameters, computing the individual estimates, computing the FIM and the log-likelihood (linearization)
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+saemix.options<-saemixControl(map=TRUE, fim=TRUE, ll.is=FALSE, displayProgress=FALSE, seed=12345)
+saemix.gompertz.fit0 <- saemix(saemix.gompertz.model0,saemix.data,saemix.options)
+```
+
+```{r}
+summary(saemix.gompertz.fit0)
+```
+
+Display some diagnostic plots:
+
+```{r, fig.height=6, message=FALSE, warning=FALSE}
+#Individual predictions
+saemix.gompertz.fit0 <- saemix.predict(saemix.gompertz.fit0)
+
+# Individual plot for subject 1 to 9, 
+saemix.plot.fits(saemix.gompertz.fit0,ilist=c(1:9),smooth=TRUE)
+```
+
+```{r, warning=FALSE,message=FALSE}
+# Diagnostic plot: observations versus population predictions
+saemix.plot.obsvspred(saemix.gompertz.fit0,level=1)
+```
+
+```{r, fig.height=7}
+# Scatter plot of residuals
+saemix.plot.scatterresiduals(saemix.gompertz.fit0, level=1)
+```
+
+Correlation matrix of the estimates: 
+```{r}
+fim <- -saemix.gompertz.fit0@results@fim #Fisher information matrix
+cov.est <- solve(fim) # covariance matrix of the estimates
+d <- sqrt(diag(cov.est)) # s.e. of the estimates
+cov.est/(d%*%t(d)) # correlation matrix of the estimates
+```
+
+Fit the same model to the same data, assuming different population parameters for the control and GMO groups. Can we conclude that the regime has an effect on  the growth of the 11% male rats?
+
+
+  7. Use an asymptotic regression model $f(t) = w_{\infty} + (w_0 -w_{\infty})e^{-k\,t}$ to test the effect of the regime on the growth of the 11% male rats.
+
+
+
+
+  8. Should we accept the hypothesis that the random effects are uncorrelated?
+  
+  
+  9. In conclusion, what is the ``best'' model to fit this data?
+
+
