@@ -1,0 +1,131 @@
+body{
+    margin: 0 auto;
+    font-family: Calibri, Palatino, Georgia, serif;
+    color: #333333;
+    line-height: 1.4;
+    padding: 0px;
+    font-size: 16px;
+    text-align: justify;
+}
+.content-area-top {
+  margin-top: -18px;
+ }
+
+subtitle {
+  color: #888888;
+  line-height: 1;
+  font-size: 16px;
+  font-family: Calibri, Palatino, Georgia, serif;
+}
+h1, h2, h3, h4 {
+    color: #111111;
+    font-weight: 400;
+}
+h1, h2, h3, h4, h5, p {
+    margin-bottom: 6px;
+    padding: 0;
+}
+h1 {
+    font-size: 36px;
+    margin: 24px 0 6px;
+}
+h2 {
+    font-size: 30px;
+    /* The bottom margin is small. It's designed to be used with gray meta text
+     * below a post title. */
+    margin: 24px 0 6px;
+}
+h3 {
+    font-size: 24px;
+}
+h4 {
+    color: #585858;
+    font-size: 15px;
+}
+h5 {
+    font-size: 18px;
+}
+a {
+    color: #9270aa;  *  #565c87;  */
+    margin: 0;
+    padding: 0;
+    vertical-align: baseline;
+}
+a:hover {
+    text-decoration: none;
+    color:#7e3cad; 
+    font-weight: bold;
+}
+a:visited {
+    color: #91849b;
+}
+pre {
+  overflow: auto;
+padding: 12px;
+  border-left: 5px solid #ccc;
+	margin: 12px 0 12px 0px;
+}
+tt, dt {
+    font-family: Consolas, Monaco, Andale Mono, monospace;
+}
+code {
+    font-family: Consolas, Monaco, Andale Mono, monospace;
+    line-height: 1;
+    font-size: 14px;
+}
+mycode {
+    font-family: Andale Mono, Monaco,  monospace;
+    font-size: 14px;
+    color: #585858;
+}
+aside {
+    display: block;
+    float: right;
+    width: 390px;
+}
+blockquote {
+    border-left:.5em solid #eee;
+    padding: 0 1em;
+    margin-left:0;
+}
+blockquote  cite {
+    line-height:20px;
+    color:#bfbfbf;
+}
+blockquote cite:before {
+    content: '\2014 \00A0';
+}
+
+blockquote p {  
+    color: #666;
+    font-family: Calibri, Palatino, Georgia, serif;
+    font-size:16px;
+    max-width: 600px;
+    text-align: justify;
+}
+hr {
+    width: 100%;
+    text-align: left;
+    margin: 0 auto 0 0;
+}
+.list-unstyled {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+th {  background-color:#E0E0E0 ;
+      border:1px solid black;
+      padding:5px;
+      text-align: center;
+}
+
+td{
+text-align: right;
+border:1px solid #E0E0E0;
+padding-right:10px;}
+
+table{ 
+border-collapse:collapse;
+margin:auto;
+ border: 2px solid black;}

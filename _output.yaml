@@ -1,0 +1,11 @@
+  html_document:
+    css: sia.css
+    fig_height: 4
+    fig_width: 8
+    highlight: tango
+    includes:
+      before_body: macros.html
+    number_sections: yes
+    theme: flatly
+    toc: yes
+
